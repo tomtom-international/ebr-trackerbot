@@ -9,13 +9,15 @@ import pendulum
 
 
 def check_tests(
-    loop, check_tests_delay, storage, slack_client, api_url, br_url
+    loop, check_tests_delay, storage, slack_client, api_url, slack_message_template
 ):  # pylint: disable-msg=too-many-arguments
     """
     Check tests and send slack message to user when some tracked tests failed
     """
     logging.info("Check tests results")
-    loop.call_later(check_tests_delay, check_tests, loop, check_tests_delay, storage, slack_client, api_url, br_url)
+    loop.call_later(
+        check_tests_delay, check_tests, loop, check_tests_delay, storage, slack_client, api_url, slack_message_template
+    )
     end = pendulum.now("UTC")
     start = pendulum.now("UTC").substract(hours=24)
     response = requests.get(
@@ -36,26 +38,19 @@ def check_tests(
         for track in tracks:
             if full_name != track["test"]:
                 continue
-            asyncio.wait(send_track(track, count, check_tests_delay, slack_client, br_url))
+            asyncio.wait(send_track(track, count, check_tests_delay, slack_client, slack_message_template))
 
 
-def send_track(track, count, check_tests_delay, client, br_url):
+def send_track(track, count, check_tests_delay, client, slack_message_template):
     """
     Send slack message
     """
     logging.info("Sending message to client. USER: %s, TEST: %s FAILED", track["user"], track["test"])
-    link = ""
-    if br_url is not None:
-        link = br_url + track["test"]
-    return client.chat_postMessage(
-        channel=track["channel_id"],
-        text="Test *"
-        + track["test"]
-        + "* failed *"
-        + str(count)
-        + "x* in the last "
-        + pendulum.period(pendulum.now("UTC").subtract(seconds=check_tests_delay), pendulum.now("UTC")).in_words()
-        + "\n"
-        + link,
-        thread_ts=track["thread_ts"],
+    slack_message = slack_message_template if slack_message_template is not None else ""
+    slack_message = slack_message.replace("{{test}}", track["test"])
+    slack_message = slack_message.replace("{{count}}", str(count))
+    slack_message = slack_message.replace(
+        "{{period}}",
+        pendulum.period(pendulum.now("UTC").subtract(seconds=check_tests_delay), pendulum.now("UTC")).in_words(),
     )
+    return client.chat_postMessage(channel=track["channel_id"], text=slack_message, thread_ts=track["thread_ts"])

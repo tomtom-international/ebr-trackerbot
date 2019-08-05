@@ -19,7 +19,7 @@ ebr tracker bot
 * `API_URL` - (required) url to br board api endpoint. Used for periodical checks for failed tests.
 * `BACKEND` - (optional) backend storage specification (memory or sqlite). Default is memory.
 * `SQLITE_FILENAME` - (optional) sqlite filename path. Default is data.db
-* `BR_URL` - (optional) link to br board which is used in slack message when test failed
+* `SLACK_MESSAGE_TEMPLATE` - (optional) custom slack message when test failed. Can contain these placeholders: {{test}} - test name, {{count}} - number of failures, {{period}} - time period
 
 
 **How to run:**
