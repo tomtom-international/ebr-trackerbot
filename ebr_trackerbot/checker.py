@@ -16,8 +16,8 @@ def check_tests(
     """
     logging.info("Check tests results")
     loop.call_later(check_tests_delay, check_tests, loop, check_tests_delay, storage, slack_client, api_url, br_url)
-    end = pendulum.now("Europe/Berlin")
-    start = pendulum.now("Europe/Berlin").substract(hours=24)
+    end = pendulum.now("UTC")
+    start = pendulum.now("UTC").substract(hours=24)
     response = requests.get(
         api_url,
         params={"test_status": "failed", "start": start.to_iso8601_string(), "end": end.to_iso8601_string()},
@@ -55,7 +55,7 @@ def send_track(track, count, check_tests_delay, client, br_url):
         + str(count)
         + "x* in the last "
         + pendulum.period(
-            pendulum.now("Europe/Berlin").subtract(seconds=check_tests_delay), pendulum.now("Europe/Berlin")
+            pendulum.now("UTC").subtract(seconds=check_tests_delay), pendulum.now("UTC")
         ).in_words()
         + "\n"
         + link,

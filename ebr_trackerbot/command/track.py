@@ -17,7 +17,7 @@ def track_command(text, result, payload, commands):
 
     test = result.group(1)
     duration = result.group(2)
-    expiry = pendulum.now("Europe/Berlin")
+    expiry = pendulum.now("UTC")
     parts = re.split("([smhdy])", duration)
     number = None
     for part in parts:
