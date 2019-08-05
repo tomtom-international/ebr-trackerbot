@@ -55,7 +55,7 @@ def clean_expired_tracks():
     Remove expired tracks
     """
     global TRACKS
-    TRACKS = [x for x in TRACKS if pendulum.parse(x["expiry"]) > pendulum.now("Europe/Berlin")]
+    TRACKS = [x for x in TRACKS if pendulum.parse(x["expiry"]) > pendulum.now("UTC")]
 
 
 register_storage("memory", save, load_for_user, load_all_tracked_tests, delete_for_user, clean_expired_tracks)

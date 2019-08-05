@@ -61,7 +61,7 @@ def get_storage():
     return list(filter(lambda x: x["name"] == get_storage_name(), STATE.bot_storage))[0]
 
 
-def say_hello(**payload):
+def slack_message_listener(**payload):
     """
     Listener for slack message event
     """
@@ -72,7 +72,7 @@ def say_hello(**payload):
         user = data["user"]
         msg_id = data["client_msg_id"]
     except KeyError:
-        logging.debug("Missing one of channel, ts, user, client_msg_id in slack message")
+        logging.debug("Missing one of: channel, ts, user, client_msg_id in slack message")
         return
 
     if not hasattr(STATE, "last_msgs"):
@@ -122,7 +122,11 @@ def main():
         raise RuntimeError("Missing SLACK_TOKEN environment variable")
 
     api_url = os.environ["API_URL"]
-    br_url = os.environ["BR_URL"] if "BR_URL" in os.environ else None
+    slack_message_template = (
+        os.environ["SLACK_MESSAGE_TEMPLATE"]
+        if "SLACK_MESSAGE_TEMPLATE" in os.environ
+        else "Test *{{test}}* failed *{{count}}* in the last {{period}}\n"
+    )
     slack_token = os.environ["SLACK_TOKEN"]
     check_tests_delay = 86400  # in seconds, 86400 = 1 day
 
@@ -133,10 +137,17 @@ def main():
     loop = asyncio.get_event_loop()
     slack_client = slack.WebClient(token=slack_token, run_async=True)
     loop.call_later(
-        check_tests_delay, check_tests, loop, check_tests_delay, get_storage(), slack_client, api_url, br_url
+        check_tests_delay,
+        check_tests,
+        loop,
+        check_tests_delay,
+        get_storage(),
+        slack_client,
+        api_url,
+        slack_message_template,
     )
     rtm_client = slack.RTMClient(token=slack_token)
-    rtm_client.on(event="message", callback=say_hello)
+    rtm_client.on(event="message", callback=slack_message_listener)
     rtm_client.start()
 
 
