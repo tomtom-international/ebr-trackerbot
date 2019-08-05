@@ -19,7 +19,14 @@ with open("README.md") as readme_file:
 with open("CHANGELOG.md") as changelog_file:
     changelog = changelog_file.read()
 
-requirements = ["slack", "requests", "pendulum", "vault-anyconfig>=0.2.2", "PyYAML>=5.1,<6"]
+requirements = [
+    "slack>=0.0.2,<0.1.0",
+    "slackclient==2.1.0",
+    "requests>=2.22.0,<3.0.0",
+    "pendulum>=2.0.5,<3.0.0",
+    "vault-anyconfig>=0.2.2,<0.3.0",
+    "PyYAML>=5.1,<6",
+]
 
 setup_requirements = ["pytest-runner"]
 
