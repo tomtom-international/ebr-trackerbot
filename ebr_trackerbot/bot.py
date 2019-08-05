@@ -72,7 +72,7 @@ def say_hello(**payload):
         user = data["user"]
         msg_id = data["client_msg_id"]
     except KeyError:
-        logging.debug("Missing one of channel, ts, user, client_msg_id in slack message")
+        logging.debug("Missing one of: channel, ts, user, client_msg_id in slack message")
         return
 
     if not hasattr(STATE, "last_msgs"):
