@@ -112,16 +112,18 @@ def slack_message_listener(**payload):
     )
 
 
-def configure(args):
+def configure(config_file, vault_config, vault_creds):
     """
     Loads the configuration of the Slackbot
     Args:
-        args: dict with commandline inputs
+        config_file: filename for the bot configuration file
+        vault_config: filename for the vault client configuration file
+        vault_creds: filename for the vault credentials file
     """
     global config  # pylint: disable=invalid-name
-    config_client = VaultAnyConfig(args.vault_config)
-    config_client.auth_from_file(args.vault_creds)
-    config = config_client.load(args.config)["ebr-trackerbot"]
+    config_client = VaultAnyConfig(vault_config)
+    config_client.auth_from_file(vault_creds)
+    config = config_client.load(config_file)["ebr-trackerbot"]
 
     log_level = logging.getLevelName(config.get("log_level", "ERROR"))
 
@@ -139,13 +141,15 @@ def configure(args):
     config.setdefault("check_tests_delay", 86400)  # in seconds, 86400 = 1 day
 
 
-def main(args):
+def main(config_file, vault_config, vault_creds):
     """
     Initialize slack bot
     Args:
-        args: dict with commandline inputs
+        config_file: filename for the bot configuration file
+        vault_config: filename for the vault client configuration file
+        vault_creds: filename for the vault credentials file
     """
-    configure(args)
+    configure(config_file, vault_config, vault_creds)
 
     import storage  # pylint: disable-msg=unused-import
     import command  # pylint: disable-msg=unused-import

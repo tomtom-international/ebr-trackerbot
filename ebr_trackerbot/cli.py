@@ -24,7 +24,7 @@ def parse_args(args):
 def main():
     """Console script for ebr-trackerbot."""
     args = parse_args(sys.argv[1:])
-    bot.main(args)
+    bot.main(args.config, args.vault_config, args.vault_creds)
 
 
 if __name__ == "__main__":
