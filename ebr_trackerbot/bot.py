@@ -61,7 +61,7 @@ def get_storage():
     return list(filter(lambda x: x["name"] == get_storage_name(), STATE.bot_storage))[0]
 
 
-def say_hello(**payload):
+def slack_message_listener(**payload):
     """
     Listener for slack message event
     """
@@ -136,7 +136,7 @@ def main():
         check_tests_delay, check_tests, loop, check_tests_delay, get_storage(), slack_client, api_url, br_url
     )
     rtm_client = slack.RTMClient(token=slack_token)
-    rtm_client.on(event="message", callback=say_hello)
+    rtm_client.on(event="message", callback=slack_message_listener)
     rtm_client.start()
 
 
