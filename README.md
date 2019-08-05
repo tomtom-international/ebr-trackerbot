@@ -22,17 +22,10 @@ ebr tracker bot
 * `BR_URL` - (optional) link to br board which is used in slack message when test failed
 
 
-**How to build:**
-
-`
-docker build . -t test-tracker-slack-bot
-`
-
-
 **How to run:**
 
 `
-docker run -e BR_URL=<br board url> -e API_URL=<api url> -e SLACK_TOKEN=<token> -e BACKEND=<memory|sqlite> -e SQLITE_FILENAME=<filename> test-tracker-slack-bot python ebr-trackerbot
+docker run -e BR_URL=<br board url> -e API_URL=<api url> -e SLACK_TOKEN=<token> -e BACKEND=<memory|sqlite> -e SQLITE_FILENAME=<filename> tomtom-docker-registry.bintray.io/python/ebr_trackerbot python ebr-trackerbot
 `
 
 
