@@ -13,7 +13,7 @@ ebr tracker bot
 ## Features
 
 
-###Tracker bot use configuration provided via environment variables
+**Tracker bot use configuration provided via environment variables**
 
 * `SLACK_TOKEN` - (required) slack token which is used to connect slack server
 * `API_URL` - (required) url to br board api endpoint. Used for periodical checks for failed tests.
@@ -22,14 +22,14 @@ ebr tracker bot
 * `BR_URL` - (optional) link to br board which is used in slack message when test failed
 
 
-###How to build:
+**How to build:**
 
 `
 docker build . -t test-tracker-slack-bot
 `
 
 
-###How to run:
+**How to run:**
 
 `
 docker run -e BR_URL=<br board url> -e API_URL=<api url> -e SLACK_TOKEN=<token> -e BACKEND=<memory|sqlite> -e SQLITE_FILENAME=<filename> test-tracker-slack-bot python ebr-trackerbot
