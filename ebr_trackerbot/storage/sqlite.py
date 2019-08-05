@@ -9,7 +9,10 @@ from bot import register_storage, config
 
 
 def get_filename():
-    return config.get("sqlite_ filename", "data.db")
+    """
+    Returns the filename for the sqlite db
+    """
+    return config.get("sqlite_filename", "data.db")
 
 
 def create_table():

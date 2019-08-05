@@ -152,7 +152,7 @@ def main(args):
 
     logging.info("Backend: %s", get_storage_name())
     loop = asyncio.get_event_loop()
-    slack_client = slack.WebClient(token=config["slack_token"], run_async=True)
+    slack_client = slack.WebClient(token=config["slack_token"], run_async=True)  # pylint: disable=c-extension-no-member
     loop.call_later(
         config["check_tests_delay"],
         check_tests,
@@ -163,6 +163,6 @@ def main(args):
         config["api_url"],
         config["slack_message_template"],
     )
-    rtm_client = slack.RTMClient(token=config["slack_token"])
+    rtm_client = slack.RTMClient(token=config["slack_token"])  # pylint: disable=c-extension-no-member
     rtm_client.on(event="message", callback=slack_message_listener)
     rtm_client.start()
