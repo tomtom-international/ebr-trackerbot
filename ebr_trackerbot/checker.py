@@ -54,9 +54,7 @@ def send_track(track, count, check_tests_delay, client, br_url):
         + "* failed *"
         + str(count)
         + "x* in the last "
-        + pendulum.period(
-            pendulum.now("UTC").subtract(seconds=check_tests_delay), pendulum.now("UTC")
-        ).in_words()
+        + pendulum.period(pendulum.now("UTC").subtract(seconds=check_tests_delay), pendulum.now("UTC")).in_words()
         + "\n"
         + link,
         thread_ts=track["thread_ts"],
