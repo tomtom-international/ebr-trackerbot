@@ -20,7 +20,6 @@ with open("CHANGELOG.md") as changelog_file:
     changelog = changelog_file.read()
 
 requirements = [
-    "slack>=0.0.2,<0.1.0",
     "slackclient==2.1.0",
     "requests>=2.22.0,<3.0.0",
     "pendulum>=2.0.5,<3.0.0",
