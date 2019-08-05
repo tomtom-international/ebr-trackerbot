@@ -3,7 +3,8 @@
 """Console script for ebr-trackerbot."""
 import sys
 import argparse
-import bot
+
+from ebr_trackerbot import bot
 
 
 def parse_args(args):

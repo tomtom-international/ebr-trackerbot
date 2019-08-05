@@ -39,7 +39,7 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     description="EBR Tracker Slack Bot",
-    entry_points={"console_scripts": ["ebr-trackerbot=ebr_trackerbot.bot:main"]},
+    entry_points={"console_scripts": ["ebr-trackerbot=ebr_trackerbot.cli:main"]},
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=readme + "\n\n" + changelog,
