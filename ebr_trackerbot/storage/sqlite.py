@@ -4,11 +4,12 @@ Slack Bot SQLite Storage
 
 import sqlite3
 from sqlite3 import Error
-import os
 import logging
-from bot import register_storage
+from bot import register_storage, config
 
-FILENAME = os.environ["SQLITE_FILENAME"] if "SQLITE_FILENAME" in os.environ else "data.db"
+
+def get_filename():
+    return config.get("sqlite_ filename", "data.db")
 
 
 def create_table():
@@ -16,7 +17,7 @@ def create_table():
     Create sqlite table if it does not exist
     """
     try:
-        conn = sqlite3.connect(FILENAME)
+        conn = sqlite3.connect(get_filename())
         cursor = conn.cursor()
         cursor.execute(""" SELECT count(name) FROM sqlite_master WHERE type='table' AND name='tracks' """)
         if cursor.fetchone()[0] == 0:
@@ -38,7 +39,7 @@ def delete_for_user(user, test):
     """
     print("Delete track for user: " + user + ", test: " + test)
     try:
-        conn = sqlite3.connect(FILENAME)
+        conn = sqlite3.connect(get_filename())
         cursor = conn.cursor()
         cursor.execute(""" DELETE FROM tracks WHERE user = ? AND test = ?; """, [user, test])
         conn.commit()
@@ -55,7 +56,7 @@ def save(user, data):
     logging.debug("Saving track for user: %s, data: ", user)
     logging.debug(data)
     try:
-        conn = sqlite3.connect(FILENAME)
+        conn = sqlite3.connect(get_filename())
         cursor = conn.cursor()
         cursor.execute(
             """ SELECT expiry, channel_id, thread_ts FROM tracks WHERE user = ? AND test = ? """, [user, data["test"]]
@@ -84,7 +85,7 @@ def load_all_tracked_tests():
     """
     result = []
     try:
-        conn = sqlite3.connect(FILENAME)
+        conn = sqlite3.connect(get_filename())
         cursor = conn.cursor()
         cursor.execute(""" SELECT user, test, expiry, channel_id, thread_ts FROM tracks; """)
         rows = cursor.fetchall()
@@ -105,7 +106,7 @@ def load_for_user(user):
     """
     result = []
     try:
-        conn = sqlite3.connect(FILENAME)
+        conn = sqlite3.connect(get_filename())
         cursor = conn.cursor()
         cursor.execute(""" SELECT user, test, expiry, channel_id, thread_ts FROM tracks WHERE user = ?; """, [user])
         rows = cursor.fetchall()
@@ -125,7 +126,7 @@ def clean_expired_tracks():
     Delete expired tracks
     """
     try:
-        conn = sqlite3.connect(FILENAME)
+        conn = sqlite3.connect(get_filename())
         cursor = conn.cursor()
         cursor.execute(""" DELETE FROM tracks WHERE expiry < DATETIME('now'); """)
         conn.commit()
