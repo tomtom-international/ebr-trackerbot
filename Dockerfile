@@ -24,4 +24,4 @@ COPY --from=deploy_builder /opt/venv /opt/venv
 
 ENV PATH="/opt/venv/bin:$PATH"
 
-ENTRYPOINT ["ebr-trackerbot", "--config", "/etc/ebr/config.yaml", "--vault_config", "/etc/ebr/vault_config.yaml", "--vault_creds", "/etc/ebr/vault_config.yaml"]
+ENTRYPOINT ["ebr-trackerbot", "--config", "/etc/ebr-trackerbot/config.yaml", "--vault_config", "/etc/ebr-trackerbot/vault.yaml", "--vault_creds", "/etc/ebr-trackerbot/vault.yaml"]
