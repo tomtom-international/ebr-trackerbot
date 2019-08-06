@@ -19,7 +19,9 @@ WORKDIR /code
 RUN DIST_DIR=$(mktemp -d) && python setup.py sdist --dist-dir $DIST_DIR\
  && pip install $DIST_DIR/*.tar.gz
 
-FROM $PYTHON_BASE 
+FROM $PYTHON_BASE
 COPY --from=deploy_builder /opt/venv /opt/venv
 
 ENV PATH="/opt/venv/bin:$PATH"
+
+ENTRYPOINT ["ebr-trackerbot", "--config", "/etc/ebr-trackerbot/config.yaml", "--vault_config", "/etc/ebr-trackerbot/vault.yaml", "--vault_creds", "/etc/ebr-trackerbot/vault.yaml"]

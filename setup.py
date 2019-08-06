@@ -19,11 +19,17 @@ with open("README.md") as readme_file:
 with open("CHANGELOG.md") as changelog_file:
     changelog = changelog_file.read()
 
-requirements = ["slack", "requests", "pendulum"]
+requirements = [
+    "slackclient==2.1.0",
+    "requests>=2.22.0,<3.0.0",
+    "pendulum>=2.0.5,<3.0.0",
+    "vault-anyconfig>=0.2.2,<0.3.0",
+    "PyYAML>=5.1,<6",
+]
 
-setup_requirements = ["pytest-runner",]
+setup_requirements = ["pytest-runner"]
 
-test_requirements = ["pytest", "pytest-cov", "coverage",]
+test_requirements = ["pytest", "pytest-cov", "coverage"]
 
 setup(
     author=ebr_trackerbot.__author__,
@@ -39,11 +45,7 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     description="EBR Tracker Slack Bot",
-    entry_points={
-        "console_scripts": [
-            "ebr-trackerbot=ebr_trackerbot.bot:main",
-        ],
-    },
+    entry_points={"console_scripts": ["ebr-trackerbot=ebr_trackerbot.cli:main"]},
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=readme + "\n\n" + changelog,

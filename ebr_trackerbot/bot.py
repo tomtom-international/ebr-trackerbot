@@ -7,12 +7,15 @@ import os
 import re
 import sys
 import logging
+from vault_anyconfig.vault_anyconfig import VaultAnyConfig
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 from state import STATE
 from checker import check_tests
 import slack
+
+config = {}  # pylint: disable=invalid-name
 
 
 def register_command(command, description, regexp_match, callback):
@@ -49,7 +52,7 @@ def get_storage_name():
     """
     Retrieve storage name
     """
-    return os.environ["BACKEND"] if "BACKEND" in os.environ else "memory"
+    return config.get("storage_backend", "memory")
 
 
 def get_storage():
@@ -109,47 +112,61 @@ def slack_message_listener(**payload):
     )
 
 
-def main():
+def configure(config_file, vault_config, vault_creds):
+    """
+    Loads the configuration of the Slackbot
+    Args:
+        config_file: filename for the bot configuration file
+        vault_config: filename for the vault client configuration file
+        vault_creds: filename for the vault credentials file
+    """
+    global config  # pylint: disable=invalid-name
+    config_client = VaultAnyConfig(vault_config)
+    config_client.auth_from_file(vault_creds)
+    config = config_client.load(config_file)["ebr-trackerbot"]
+
+    log_level = logging.getLevelName(config.get("log_level", "ERROR"))
+
+    logging.basicConfig(
+        level=log_level, format="[%(asctime)s] [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+    )
+    if "api_url" not in config:
+        raise RuntimeError("Missing api url in configuration.")
+    if "slack_token" not in config:
+        raise RuntimeError("Missing Slack Token in configuration.")
+
+    default_slack_message_template = "Test *{{test}}* failed *{{count}}* in the last {{period}}\n"
+    config.setdefault("slack_message_template", default_slack_message_template)
+
+    config.setdefault("check_tests_delay", 86400)  # in seconds, 86400 = 1 day
+
+
+def main(config_file, vault_config, vault_creds):
     """
     Initialize slack bot
+    Args:
+        config_file: filename for the bot configuration file
+        vault_config: filename for the vault client configuration file
+        vault_creds: filename for the vault credentials file
     """
-    logging.basicConfig(
-        level=logging.DEBUG, format="[%(asctime)s] [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
-    )
-    if "API_URL" not in os.environ:
-        raise RuntimeError("Missing API_URL environment variable")
-    if "SLACK_TOKEN" not in os.environ:
-        raise RuntimeError("Missing SLACK_TOKEN environment variable")
-
-    api_url = os.environ["API_URL"]
-    slack_message_template = (
-        os.environ["SLACK_MESSAGE_TEMPLATE"]
-        if "SLACK_MESSAGE_TEMPLATE" in os.environ
-        else "Test *{{test}}* failed *{{count}}* in the last {{period}}\n"
-    )
-    slack_token = os.environ["SLACK_TOKEN"]
-    check_tests_delay = 86400  # in seconds, 86400 = 1 day
+    configure(config_file, vault_config, vault_creds)
 
     import storage  # pylint: disable-msg=unused-import
     import command  # pylint: disable-msg=unused-import
 
     logging.info("Backend: %s", get_storage_name())
     loop = asyncio.get_event_loop()
-    slack_client = slack.WebClient(token=slack_token, run_async=True)
+    slack_client = slack.WebClient(token=config["slack_token"], run_async=True)
     loop.call_later(
-        check_tests_delay,
+        config["check_tests_delay"],
         check_tests,
         loop,
-        check_tests_delay,
+        config["check_tests_delay"],
         get_storage(),
         slack_client,
-        api_url,
-        slack_message_template,
+        config["api_url"],
+        config["slack_message_template"],
     )
-    rtm_client = slack.RTMClient(token=slack_token)
+    rtm_client = slack.RTMClient(token=config["slack_token"])
     rtm_client.on(event="message", callback=slack_message_listener)
     rtm_client.start()
-
-
-if __name__ == "__main__":
-    main()

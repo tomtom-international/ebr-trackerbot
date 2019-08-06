@@ -13,20 +13,37 @@ ebr tracker bot
 ## Features
 
 
-**Tracker bot use configuration provided via environment variables**
+## Configuration
 
-* `SLACK_TOKEN` - (required) slack token which is used to connect slack server
-* `API_URL` - (required) url to br board api endpoint. Used for periodical checks for failed tests.
-* `BACKEND` - (optional) backend storage specification (memory or sqlite). Default is memory.
-* `SQLITE_FILENAME` - (optional) sqlite filename path. Default is data.db
-* `SLACK_MESSAGE_TEMPLATE` - (optional) custom slack message when test failed. Can contain these placeholders: {{test}} - test name, {{count}} - number of failures, {{period}} - time period
+Configure the vault authentication and vault credentials as described here: https://github.com/tomtom-international/vault-anyconfig#files-and-formatting
+Provide an empty file for both if you will not be using Vault.
+
+Provide the following required configuration via a YAML file:
+
+```yaml
+ebr-trackerbot:
+    slack_token: slack API token (a secret value, should be stored in Vault)
+    apiurl: url to ebr board api endpoint
+```
+
+Optional settings (also to be included in the ebr-trackerbot section):
+
+* `storage_backend`: backend storage medium (memory or sqlite). Default is memory.
+* `sqlite_filename`: sqlite filename path. Default is data.db
+* `slack_message_template`: custom slack message when test failed. Can contain these placeholders: {{test}} - test name, {{count}} - number of failures, {{period}} - time period. Default is an empty string.
+* `check_tests_delay`: frequency in which to check for test failures, specified in seconds. Default is 8600 seconds (one day).
+* `log_level`: sets the logging level. See https://docs.python.org/3/library/logging.html#logging-levels for the level options. Default is `ERROR`.
+
+**Note** any entry can be stored in Hashicorp Vault using vault-anyconfig. See https://github.com/tomtom-international/vault-anyconfig#main-configuration-file
+for details.
 
 
-**How to run:**
+## Run with Docker:
 
-`
-docker run -e BR_URL=<br board url> -e API_URL=<api url> -e SLACK_TOKEN=<token> -e BACKEND=<memory|sqlite> -e SQLITE_FILENAME=<filename> tomtom-docker-registry.bintray.io/python/ebr_trackerbot python ebr-trackerbot
-`
+By default, the Docker image assumes a combine vault configuration and credentials file named `vault.yaml`. If you are not using Vault, this can be an
+empty  file, otherwise see the configuration section above.
+
+`docker run -e BR_URL=<br board url> -v ${pwd}/config.yaml:/etc/ebr-trackerbot/config.yaml -v ${pwd}/vault.yaml:/etc/ebr-trackerbot/vault.yaml tomtom-docker-registry.bintray.io/python/ebr_trackerbot python ebr-trackerbot`
 
 
 ## Requirements
