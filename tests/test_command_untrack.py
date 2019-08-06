@@ -32,7 +32,7 @@ def test_untrack_command():
 
 
 def post_message_commands(channel, text, thread_ts):
-    assert re.match(r"^Tracking was stopped for test \*test\*", text)
+    assert re.match(r"^Tracking was ended for test \*test\*", text)
     return {"ok": "ok"}
 
 

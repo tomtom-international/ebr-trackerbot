@@ -17,12 +17,12 @@ def untrack_command(text, result, payload, commands):
 
     payload["web_client"].chat_postMessage(
         channel=payload["data"]["channel"],
-        text="Tracking was stopped for test *" + test + "*",
+        text="Tracking was ended for test *" + test + "*",
         thread_ts=payload["data"]["ts"],
     )
 
 
 register_command(
-    "untrack", "Stops test tracking. Command syntax: untrack full_testname", "^untrack ([^ ]+)$", untrack_command
+    "untrack", "Ends test tracking. Command syntax: untrack full_testname", "^untrack ([^ ]+)$", untrack_command
 )
 logging.info("Untrack command registered")

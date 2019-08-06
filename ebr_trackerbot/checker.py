@@ -29,7 +29,7 @@ def check_tests(
     tracks = storage["load_all_tracked_tests"]()
 
     if "tests" not in response.json():
-        logging.warning("Invalid JSON from api call. Does not contains tests field.")
+        logging.warning("Invalid JSON from api call. Does not contains a tests field.")
         return
 
     for test in response.json()["tests"]:

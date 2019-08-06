@@ -87,7 +87,7 @@ def slack_message_listener(**payload):
         STATE.last_msgs.popleft()
     STATE.last_msgs.append(msg_id)
 
-    logging.info("Incomming message from slack")
+    logging.info("Incoming message from slack")
     logging.info(data)
 
     text = ""
@@ -131,7 +131,7 @@ def configure(config_file, vault_config, vault_creds):
         level=log_level, format="[%(asctime)s] [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
     )
     if "api_url" not in config:
-        raise RuntimeError("Missing api url in configuration.")
+        raise RuntimeError("Missing API URL in configuration.")
     if "slack_token" not in config:
         raise RuntimeError("Missing Slack Token in configuration.")
 
