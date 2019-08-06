@@ -66,7 +66,7 @@ def test_slack_message_listener_incomplete_payload(caplog):
 
 def test_slack_message_listener_no_user_mentioned(caplog, message_event_payload):
     """
-    Tests the slack_message_listener to ensure it logs a debug message if there is no bot user "at mentioned"
+    Tests the slack_message_listener to ensure it logs a debug message if there is no bot user "at mentioned" nor has it been direct messaged
     """
     with caplog.at_level(logging.DEBUG):
         bot.slack_message_listener(**message_event_payload)
@@ -83,6 +83,30 @@ def test_slack_message_listener_user_mentioned(caplog, message_event_payload):
 
     # Provide @mention for message
     payload["data"]["text"] = "@{user}".format(user=bot.bot_id)
+    mock_web_client = Mock()
+    payload["web_client"] = mock_web_client
+
+    bot.slack_message_listener(**payload)
+
+    mock_web_client.chat_postMessage.assert_called_once_with(
+        channel=payload["data"]["channel"],
+        text="Hi <@{user}>! \nI don't understand your command. Please type *help* to see all supported commands\n".format(
+            user=payload["data"]["user"]
+        ),
+        thread_ts=payload["data"]["ts"],
+    )
+
+
+@patch("bot.bot_id", "test_user")
+@patch("bot.STATE", autospec=False)
+def test_slack_message_listener_direct_message(caplog, message_event_payload):
+    """
+    Tests the slack_message_listener to ensure it processes the command when the slackbot user is sent a DM
+    """
+    payload = message_event_payload
+
+    # Provide proper channel format
+    payload["data"]["channel"] = "Dchannel_name"
     mock_web_client = Mock()
     payload["web_client"] = mock_web_client
 
