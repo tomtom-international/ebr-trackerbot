@@ -16,6 +16,7 @@ from checker import check_tests
 import slack
 
 config = {}  # pylint: disable=invalid-name
+bot_id = ""  # pylint: disable=invalid-name
 
 
 def register_command(command, description, regexp_match, callback):
@@ -94,6 +95,11 @@ def slack_message_listener(**payload):
     if "text" in data:
         text = re.sub(r"<[^>]+>[ ]+", "", data["text"])
 
+    # Check if the bot has been "at mentioned" (`@slackbot`), if not return)
+    if not re.match(r"^@" + bot_id, text):
+        logging.debug('Message does not "at mention" bot username')
+        return
+
     if not hasattr(STATE, "bot_command"):
         STATE.bot_command = []
     for command in STATE.bot_command:
@@ -157,6 +163,10 @@ def main(config_file, vault_config, vault_creds):
     logging.info("Backend: %s", get_storage_name())
     loop = asyncio.get_event_loop()
     slack_client = slack.WebClient(token=config["slack_token"], run_async=True)
+
+    global bot_id  # pylint: disable=invalid-name
+    bot_id = slack_client.bots_info()["bot"]["user_id"]
+
     loop.call_later(
         config["check_tests_delay"],
         check_tests,
