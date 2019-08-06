@@ -17,3 +17,8 @@ jobs:
   - template: jobs/python.setup.py.yml@templates
     parameters:
       pypiConnector: "pypi-tomtom"
+      pythonTestVersions:
+      - name: Python36
+        version: "3.6"
+      - name: Python37
+        version: "3.7"
