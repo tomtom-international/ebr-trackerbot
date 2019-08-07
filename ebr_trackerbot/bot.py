@@ -129,7 +129,7 @@ def id_bot(channel, loop, slack_client):
     """
     message_response = loop.run_until_complete(
         slack_client.chat_postMessage(
-            channel="#test-slackbot",
+            channel=channel,
             text="""Hi there! I'm the ebr-trackerbot. I can provide automatic tracking of test failures for you.
 Message me in this channel with an at mention or send me a direct message.
 Use the help command for more info.""",
