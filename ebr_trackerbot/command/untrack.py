@@ -6,7 +6,7 @@ from bot import register_command
 from bot import get_storage
 
 
-def untrack_command(text, result, payload, commands):
+def untrack_command(text, result, payload, config, commands):
     """
     Slack Bot Untrack Command
     """

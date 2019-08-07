@@ -9,7 +9,7 @@ from bot import get_storage
 import pendulum
 
 
-def track_command(text, result, payload, commands):
+def track_command(text, result, payload, config, commands):
     """
     Slack Bot Track Command
     """

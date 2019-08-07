@@ -65,7 +65,7 @@ def get_storage():
     return list(filter(lambda x: x["name"] == get_storage_name(), STATE.bot_storage))[0]
 
 
-def slack_message_listener(bot_user, **payload):
+def slack_message_listener(bot_user, config, **payload):
     """
     Listener for slack message event
     """
@@ -105,7 +105,7 @@ def slack_message_listener(bot_user, **payload):
     for command in STATE.bot_command:
         result = re.match(command["regexp_match"], text, re.IGNORECASE)
         if result:
-            command["callback"](text, result, payload, STATE.bot_command)
+            command["callback"](text, result, payload, config, STATE.bot_command)
             return
 
     web_client = payload["web_client"]
@@ -202,5 +202,5 @@ def main(config_file, vault_config, vault_creds):
         config["slack_message_template"],
     )
     rtm_client = slack.RTMClient(token=config["slack_token"])
-    rtm_client.on(event="message", callback=functools.partial(slack_message_listener, bot_user))
+    rtm_client.on(event="message", callback=functools.partial(slack_message_listener, bot_user, config))
     rtm_client.start()
