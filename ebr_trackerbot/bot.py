@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import logging
+import functools
 from vault_anyconfig.vault_anyconfig import VaultAnyConfig
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -16,7 +17,6 @@ from checker import check_tests
 import slack
 
 config = {}  # pylint: disable=invalid-name
-bot_user = ""  # pylint: disable=invalid-name
 
 
 def register_command(command, description, regexp_match, callback):
@@ -65,7 +65,7 @@ def get_storage():
     return list(filter(lambda x: x["name"] == get_storage_name(), STATE.bot_storage))[0]
 
 
-def slack_message_listener(**payload):
+def slack_message_listener(bot_user, **payload):
     """
     Listener for slack message event
     """
@@ -189,7 +189,6 @@ def main(config_file, vault_config, vault_creds):
     loop = asyncio.get_event_loop()
     slack_client = slack.WebClient(token=config["slack_token"], run_async=True)
 
-    global bot_user  # pylint: disable=invalid-name
     bot_user = id_bot(config["init_channel"], loop, slack_client)
 
     loop.call_later(
@@ -203,5 +202,5 @@ def main(config_file, vault_config, vault_creds):
         config["slack_message_template"],
     )
     rtm_client = slack.RTMClient(token=config["slack_token"])
-    rtm_client.on(event="message", callback=slack_message_listener)
+    rtm_client.on(event="message", callback=functools.partial(slack_message_listener, bot_user))
     rtm_client.start()
