@@ -73,7 +73,7 @@ def test_slack_message_listener_no_user_mentioned(caplog, message_event_payload)
     assert 'Message does not "at mention" bot username' in caplog.text
 
 
-@patch("bot.bot_id", "test_user")
+@patch("bot.bot_user", "test_user")
 @patch("bot.STATE", autospec=False)
 def test_slack_message_listener_user_mentioned(caplog, message_event_payload):
     """
@@ -82,7 +82,7 @@ def test_slack_message_listener_user_mentioned(caplog, message_event_payload):
     payload = message_event_payload
 
     # Provide @mention for message
-    payload["data"]["text"] = "@{user}".format(user=bot.bot_id)
+    payload["data"]["text"] = "<@{user}> bad_command".format(user=bot.bot_user)
     mock_web_client = Mock()
     payload["web_client"] = mock_web_client
 
@@ -97,7 +97,7 @@ def test_slack_message_listener_user_mentioned(caplog, message_event_payload):
     )
 
 
-@patch("bot.bot_id", "test_user")
+@patch("bot.bot_user", "test_user")
 @patch("bot.STATE", autospec=False)
 def test_slack_message_listener_direct_message(caplog, message_event_payload):
     """

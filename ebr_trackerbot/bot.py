@@ -16,7 +16,7 @@ from checker import check_tests
 import slack
 
 config = {}  # pylint: disable=invalid-name
-bot_id = ""  # pylint: disable=invalid-name
+bot_user = ""  # pylint: disable=invalid-name
 
 
 def register_command(command, description, regexp_match, callback):
@@ -96,7 +96,7 @@ def slack_message_listener(**payload):
         text = re.sub(r"<[^>]+>[ ]+", "", data["text"])
 
     # Check if the bot has been "at mentioned" (`@slackbot`) or a direct message, if not return)
-    if not re.match(r"^<@" + bot_id + r">[ ]", text) and not channel_id[0] == "D":
+    if not re.match(r"^<@" + bot_user + r">[ ]", data["text"]) and not channel_id[0] == "D":
         logging.debug('Message does not "at mention" bot username')
         return
 
@@ -116,6 +116,30 @@ def slack_message_listener(**payload):
         + ">! \nI don't understand your command. Please type *help* to see all supported commands\n",
         thread_ts=thread_ts,
     )
+
+
+def id_bot(channel, loop, slack_client):
+    """
+    Identify the bot's user ID, by posting a message into some channel (which yields the bot id) then looking that up with bots.info.
+    Args:
+        channel: channel to post in. Must start with "#"
+        loop: Event loop to execute in
+        slack_client: configured instance of a slack client
+    Returns: the user ID of the bot
+    """
+    message_response = loop.run_until_complete(
+        slack_client.chat_postMessage(
+            channel="#test-slackbot",
+            text="""Hi there! I'm the ebr-trackerbot. I can provide automatic tracking of test failures for you.
+Message me in this channel with an at mention or send me a direct message.
+Use the help command for more info.""",
+        )
+    )
+
+    bot_id = message_response["message"]["bot_id"]
+    bot_info = loop.run_until_complete(slack_client.bots_info(bot=bot_id))
+
+    return bot_info["bot"]["user_id"]
 
 
 def configure(config_file, vault_config, vault_creds):
@@ -143,6 +167,7 @@ def configure(config_file, vault_config, vault_creds):
 
     default_slack_message_template = "Test *{{test}}* failed *{{count}}* in the last {{period}}\n"
     config.setdefault("slack_message_template", default_slack_message_template)
+    config.setdefault("init_channel", "#test-slackbot")
 
     config.setdefault("check_tests_delay", 86400)  # in seconds, 86400 = 1 day
 
@@ -164,8 +189,8 @@ def main(config_file, vault_config, vault_creds):
     loop = asyncio.get_event_loop()
     slack_client = slack.WebClient(token=config["slack_token"], run_async=True)
 
-    global bot_id  # pylint: disable=invalid-name
-    bot_id = slack_client.bots_info()["bot"]["user_id"]
+    global bot_user  # pylint: disable=invalid-name
+    bot_user = id_bot(config["init_channel"], loop, slack_client)
 
     loop.call_later(
         config["check_tests_delay"],
