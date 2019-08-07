@@ -28,6 +28,7 @@ ebr-trackerbot:
 
 Optional settings (also to be included in the ebr-trackerbot section):
 
+* `init_channel`: a message will be posted in this channel at startup, must be set to an existing channel. Default is `#test-slackbot`.
 * `storage_backend`: backend storage medium (memory or sqlite). Default is memory.
 * `sqlite_filename`: sqlite filename path. Default is data.db
 * `slack_message_template`: custom slack message when test failed. Can contain these placeholders: {{test}} - test name, {{count}} - number of failures, {{period}} - time period. Default is an empty string.
