@@ -96,7 +96,7 @@ def slack_message_listener(**payload):
         text = re.sub(r"<[^>]+>[ ]+", "", data["text"])
 
     # Check if the bot has been "at mentioned" (`@slackbot`) or a direct message, if not return)
-    if not re.match(r"^@" + bot_id, text) and not channel_id[0] == "D":
+    if not re.match(r"^<@" + bot_id + r">[ ]", text) and not channel_id[0] == "D":
         logging.debug('Message does not "at mention" bot username')
         return
 
