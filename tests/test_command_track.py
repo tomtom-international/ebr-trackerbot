@@ -12,11 +12,12 @@ sys.path.append("ebr_trackerbot/command")
 
 import pytest
 from track import track_command
-from bot import register_storage, get_storage
+from bot import register_storage, get_storage, config
 
 
 def test_track_command():
-    register_storage("memory", save_record, "load_for_user", "load_all", "delete_for_user", "clean_expired_tracks")
+    config["storage_backend"] = "test"
+    register_storage("test", save_record, "load_for_user", "load_all", "delete_for_user", "clean_expired_tracks")
     assert get_storage()["save"] == save_record
     payload = {}
     payload["web_client"] = type("", (), {})()

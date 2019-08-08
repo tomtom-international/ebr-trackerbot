@@ -11,11 +11,12 @@ sys.path.append("ebr_trackerbot/command")
 
 import pytest
 from list import list_command
-from bot import register_storage
+from bot import register_storage, config
 
 
 def test_list_command():
-    register_storage("memory", "save", load_for_user, "load_all", "delete_for_user", "clean_expired_tracks")
+    config["storage_backend"] = "test"
+    register_storage("test", "save", load_for_user, "load_all", "delete_for_user", "clean_expired_tracks")
     payload = {}
     payload["web_client"] = type("", (), {})()
     payload["web_client"].chat_postMessage = post_message_commands

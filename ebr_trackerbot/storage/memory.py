@@ -4,59 +4,65 @@ Slack Bot Memory Storage
 import logging
 from bot import register_storage
 import pendulum
+from functools import partial
 
-TRACKS = []
 
-
-def delete_for_user(user, test):
+def delete_for_user(tracks, user, test):
     """
     Delete tracking for user and test
     """
-    global TRACKS
     logging.debug("Delete track for user: " + user + ", test: " + test)
-    TRACKS = [x for x in TRACKS if x["user"] != user and x["test"] != test]
+    for track in tracks:
+        if track["user"] == user and track["test"] == test:
+            tracks.remove(track)
 
 
-def save(user, data):
+def save(tracks, user, data):
     """
     Create tracking for user and test
     """
-    global TRACKS
     logging.debug("Saving track for user: %s, data: ", user)
     logging.debug(data)
-    for index, track in enumerate(TRACKS):
+    for index, track in enumerate(tracks):
         if track["user"] == user and track["test"] == data["test"]:
-            TRACKS[index]["expiry"] = data["expiry"]
-            TRACKS[index]["channel_id"] = data["channel_id"]
-            TRACKS[index]["thread_ts"] = data["thread_ts"]
+            tracks[index]["expiry"] = data["expiry"]
+            tracks[index]["channel_id"] = data["channel_id"]
+            tracks[index]["thread_ts"] = data["thread_ts"]
             return
     data["user"] = user
-    TRACKS.append(data)
+    tracks.append(data)
 
 
-def load_all_tracked_tests():
+def load_all_tracked_tests(tracks):
     """
     Load all tracked tests
     """
-    global TRACKS
-    return TRACKS
+    return tracks
 
 
-def load_for_user(user):
+def load_for_user(tracks, user):
     """
     Load all tracks for user
     """
-    global TRACKS
-    return [x for x in TRACKS if x["user"] == user]
+    return [x for x in tracks if x["user"] == user]
 
 
-def clean_expired_tracks():
+def clean_expired_tracks(tracks):
     """
     Remove expired tracks
     """
-    global TRACKS
-    TRACKS = [x for x in TRACKS if pendulum.parse(x["expiry"]) > pendulum.now("UTC")]
+    for track in tracks:
+        if pendulum.parse(track["expiry"], tz="UTC") < pendulum.now("UTC"):
+            tracks.remove(track)
 
 
-register_storage("memory", save, load_for_user, load_all_tracked_tests, delete_for_user, clean_expired_tracks)
+TRACKS = []
+register_storage(
+    "memory",
+    partial(save, TRACKS),
+    partial(load_for_user, TRACKS),
+    partial(load_all_tracked_tests, TRACKS),
+    partial(delete_for_user, TRACKS),
+    partial(clean_expired_tracks, TRACKS),
+)
 logging.info("Memory storage registered")

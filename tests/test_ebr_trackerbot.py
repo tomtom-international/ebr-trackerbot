@@ -49,7 +49,8 @@ def test_register_storage():
 
 def test_get_storage():
     """Get storage test"""
-    bot.register_storage("memory", "save", "load_for_user", "load_all", "delete_for_user", "clean_expired_tracks")
+    bot.register_storage("test", "save", "load_for_user", "load_all", "delete_for_user", "clean_expired_tracks")
+    bot.config["storage_backend"] = "test"
     assert "save" in bot.get_storage()
     assert "save" == bot.get_storage()["save"]
 

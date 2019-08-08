@@ -12,11 +12,12 @@ sys.path.append("ebr_trackerbot/command")
 
 import pytest
 from untrack import untrack_command
-from bot import register_storage, get_storage
+from bot import register_storage, get_storage, config
 
 
 def test_untrack_command():
-    register_storage("memory", "save", "load_for_user", "load_all", delete, "clean_expired_tracks")
+    config["storage_backend"] = "test"
+    register_storage("test", "save", "load_for_user", "load_all", delete, "clean_expired_tracks")
     assert get_storage()["delete_for_user"] == delete
     payload = {}
     payload["web_client"] = type("", (), {})()
