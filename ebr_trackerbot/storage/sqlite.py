@@ -3,7 +3,6 @@ Slack Bot SQLite Storage
 """
 
 import sqlite3
-from sqlite3 import Error
 import db
 from functools import partial
 from bot import config, register_storage
@@ -17,14 +16,14 @@ def get_filename():
     return config.get("sqlite_filename", "/tmp/data.db")
 
 
-conn = sqlite3.connect(get_filename())
-db.create_table(conn, Error)
+CONN = sqlite3.connect(get_filename())
+db.create_table(CONN, sqlite3.Error)
 register_storage(
     "sqlite",
-    partial(db.save, conn, Error),
-    partial(db.load_for_user, conn, Error),
-    partial(db.load_all_tracked_tests, conn, Error),
-    partial(db.delete_for_user, conn, Error),
-    partial(db.clean_expired_tracks, conn, Error),
+    partial(db.save, CONN, sqlite3.Error),
+    partial(db.load_for_user, CONN, sqlite3.Error),
+    partial(db.load_all_tracked_tests, CONN, sqlite3.Error),
+    partial(db.delete_for_user, CONN, sqlite3.Error),
+    partial(db.clean_expired_tracks, CONN, sqlite3.Error),
 )
 logging.info("SQLite storage registered")

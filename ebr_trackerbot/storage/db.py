@@ -6,7 +6,7 @@ import logging
 import pendulum
 
 
-def create_table(conn, Error):
+def create_table(conn, error):
     """
     Create table if it does not exist
     """
@@ -20,12 +20,12 @@ def create_table(conn, Error):
                 + " expiry timestamp NOT NULL, channel_id text NOT NULL, thread_ts text NOT NULL);"
             )
             conn.commit()
-    except Error as err:
+    except error as err:
         logging.error(err)
         conn.close()
 
 
-def delete_for_user(conn, Error, user, test):
+def delete_for_user(conn, error, user, test):
     """
     Delete tracking for user and test
     """
@@ -34,12 +34,12 @@ def delete_for_user(conn, Error, user, test):
         cursor = conn.cursor()
         cursor.execute(""" DELETE FROM tracks WHERE user = ? AND test = ?; """, [user, test])
         conn.commit()
-    except Error as err:
+    except error as err:
         logging.error(err)
         conn.close()
 
 
-def save(conn, Error, user, data):
+def save(conn, error, user, data):
     """
     Creates tracking for user and test
     """
@@ -62,12 +62,12 @@ def save(conn, Error, user, data):
                 [data["expiry"], data["channel_id"], data["thread_ts"], user, data["test"]],
             )
         conn.commit()
-    except Error as err:
+    except error as err:
         logging.error(err)
         conn.close()
 
 
-def load_all_tracked_tests(conn, Error):
+def load_all_tracked_tests(conn, error):
     """
     Load all tracked tests
     """
@@ -86,13 +86,13 @@ def load_all_tracked_tests(conn, Error):
             }
             result.append(data)
         return result
-    except Error as err:
+    except error as err:
         logging.error("Error during loading tracks")
         logging.error(err)
         conn.close()
 
 
-def load_for_user(conn, Error, user):
+def load_for_user(conn, error, user):
     """
     Load all tracks for user
     """
@@ -110,13 +110,13 @@ def load_for_user(conn, Error, user):
             }
             result.append(data)
         return result
-    except Error as err:
+    except error as err:
         logging.error("Error during loading track for user")
         logging.error(err)
         conn.close()
 
 
-def clean_expired_tracks(conn, Error):
+def clean_expired_tracks(conn, error):
     """
     Delete expired tracks
     """
@@ -124,7 +124,7 @@ def clean_expired_tracks(conn, Error):
         cursor = conn.cursor()
         cursor.execute(""" DELETE FROM tracks WHERE expiry < DATETIME('now'); """)
         conn.commit()
-    except Error as err:
+    except error as err:
         logging.error("Error during cleaning tracks")
         logging.error(err)
         conn.close()
