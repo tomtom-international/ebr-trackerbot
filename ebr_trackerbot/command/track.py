@@ -2,11 +2,11 @@
 Slack Bot Track Command
 """
 
-import re
 import logging
+
 from bot import register_command
 from bot import get_storage
-import pendulum
+from utility import parse_time_delta_input
 
 
 def track_command(text, result, payload, config, commands):
@@ -17,24 +17,8 @@ def track_command(text, result, payload, config, commands):
 
     test = result.group(1)
     duration = result.group(2)
-    expiry = pendulum.now("UTC")
-    parts = re.split("([smhdy])", duration)
-    number = None
-    for part in parts:
-        if part in ["s", "m", "h", "d"] and number is not None:
-            if part == "s":
-                expiry = expiry.add(seconds=number)
-            if part == "m":
-                expiry = expiry.add(minutes=number)
-            if part == "h":
-                expiry = expiry.add(hours=number)
-            if part == "d":
-                expiry = expiry.add(days=number)
-        else:
-            try:
-                number = int(part)
-            except ValueError:
-                number = None
+
+    expiry = parse_time_delta_input(duration)
 
     channel_id = payload["data"]["channel"]
     thread_ts = payload["data"]["ts"]

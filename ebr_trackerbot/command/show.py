@@ -2,39 +2,25 @@
 Slack Bot Track Command
 """
 
-import re
 import logging
 import requests
-from bot import register_command
 import pendulum
+
+from bot import register_command
+from utility import parse_time_delta_input
 
 
 def show_command(text, result, payload, config, commands):
     """
     Slack Bot Show Command
     """
-    logging.debug("Show command")
 
     target_test = result.group(1)
     duration = result.group(2)
-    start = pendulum.now("UTC")
-    parts = re.split("([smhdy])", duration)
-    number = None
-    for part in parts:
-        if part in ["s", "m", "h", "d"] and number is not None:
-            if part == "s":
-                start = start.subtract(seconds=number)
-            if part == "m":
-                start = start.subtract(minutes=number)
-            if part == "h":
-                start = start.subtract(hours=number)
-            if part == "d":
-                start = start.subtract(days=number)
-        else:
-            try:
-                number = int(part)
-            except ValueError:
-                number = None
+
+    logging.debug("Show command on " + target_test + " over " + duration)
+
+    start = parse_time_delta_input(duration)
 
     response = requests.get(
         config["api_url"],
