@@ -10,9 +10,9 @@ from functools import partial
 
 
 def get_connection():
-    '''
+    """
     Retrieve odbc connection
-    '''
+    """
     if config.get("odbc_connection_string") is None:
         raise RuntimeError("Missing odbc_connection_string in configuration")
     return pyodbc.connect(config.get("odbc_connection_string"))

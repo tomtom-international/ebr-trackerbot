@@ -13,7 +13,7 @@ def get_filename():
     """
     Returns the filename for the sqlite db
     """
-    return config.get("sqlite_filename", "/tmp/data.db")
+    return config.get("sqlite_filename", "data.db")
 
 
 CONN = sqlite3.connect(get_filename())

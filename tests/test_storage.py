@@ -11,15 +11,15 @@ sys.path.append("ebr_trackerbot/storage")
 
 
 def delete_fixtures():
-    if os.path.exists("/tmp/data.db"):
-        os.unlink("/tmp/data.db")
-    if os.path.exists("/tmp/data-odbc.db"):
-        os.unlink("/tmp/data-odbc.db")
+    if os.path.exists("data.db"):
+        os.unlink("data.db")
+    if os.path.exists("data-odbc.db"):
+        os.unlink("data-odbc.db")
 
 
 def reset_fixtures():
     delete_fixtures()
-    open("/tmp/data-odbc.db", "a").close()
+    open("data-odbc.db", "a").close()
 
 
 reset_fixtures()
@@ -27,7 +27,7 @@ reset_fixtures()
 from bot import config
 from state import STATE
 
-config["odbc_connection_string"] = "DRIVER={SQLITE3};DATABASE=/tmp/data-odbc.db"
+config["odbc_connection_string"] = "DRIVER={SQLITE3};DATABASE=data-odbc.db"
 
 import pytest
 import sqlite
