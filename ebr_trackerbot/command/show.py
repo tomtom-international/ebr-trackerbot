@@ -20,15 +20,13 @@ def show_command(text, result, payload, config, commands):
 
     logging.debug("Show command on " + target_test + " over " + duration)
 
-    start = parse_time_delta_input(duration)
+    time_now = pendulum.now("UTC")
+
+    start = parse_time_delta_input(duration, time_now)
 
     response = requests.get(
         config["api_url"],
-        params={
-            "test_status": "failed",
-            "start": start.to_iso8601_string(),
-            "end": pendulum.now("UTC").to_iso8601_string(),
-        },
+        params={"test_status": "failed", "start": start.to_iso8601_string(), "end": time_now.to_iso8601_string()},
         headers={"accept": "application/json"},
     )
 
