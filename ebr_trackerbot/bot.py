@@ -65,7 +65,7 @@ def get_storage():
     return list(filter(lambda x: x["name"] == get_storage_name(), STATE.bot_storage))[0]
 
 
-def slack_message_listener(bot_user, config, **payload):
+def slack_message_listener(bot_user, config_local, **payload):
     """
     Listener for slack message event
     """
@@ -105,7 +105,7 @@ def slack_message_listener(bot_user, config, **payload):
     for command in STATE.bot_command:
         result = re.match(command["regexp_match"], text, re.IGNORECASE)
         if result:
-            command["callback"](text, result, payload, config, STATE.bot_command)
+            command["callback"](text, result, payload, config_local, STATE.bot_command)
             return
 
     web_client = payload["web_client"]
