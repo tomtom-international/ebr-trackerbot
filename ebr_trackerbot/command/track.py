@@ -6,7 +6,7 @@ import logging
 
 from bot import register_command
 from bot import get_storage
-from utility import parse_time_delta_input
+from time_utility import parse_time_delta_input
 
 
 def track_command(text, result, payload, config, commands):

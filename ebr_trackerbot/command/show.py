@@ -7,7 +7,7 @@ import requests
 import pendulum
 
 from bot import register_command
-from utility import parse_time_delta_input
+from time_utility import parse_time_delta_input
 
 
 def show_command(text, result, payload, config, commands):
