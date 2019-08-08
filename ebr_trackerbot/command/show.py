@@ -48,7 +48,7 @@ def show_command(text, result, payload, config, commands):
             count = str(test["count"])
             payload["web_client"].chat_postMessage(
                 channel=channel_id,
-                text="Test *{test}* failed {count} times over {duration}".format(
+                text="Test *{test}* failed {count} times over the last {duration}".format(
                     test=target_test, count=count, duration=duration
                 ),
                 thread_ts=thread_ts,
