@@ -28,7 +28,7 @@ def test_track_command():
     text = "track test for 10d2h5m10s"
     result = re.match("^track ([^ ]+) for ((?:[0-9]+(?:s|m|h|d))+)$", text, re.IGNORECASE)
     commands = []
-    track_command(text, result, payload, commands)
+    track_command(text, result, payload, {}, commands)
 
 
 def post_message_commands(channel, text, thread_ts):

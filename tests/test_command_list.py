@@ -26,7 +26,7 @@ def test_list_command():
     text = "list"
     result = "list"
     commands = []
-    list_command(text, result, payload, commands)
+    list_command(text, result, payload, {}, commands)
 
 
 def post_message_commands(channel, text, thread_ts):

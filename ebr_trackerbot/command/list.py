@@ -7,7 +7,7 @@ from bot import register_command
 from bot import get_storage
 
 
-def list_command(text, result, payload, commands):
+def list_command(text, result, payload, config, commands):
     """
     Slack Bot List Command
     """
