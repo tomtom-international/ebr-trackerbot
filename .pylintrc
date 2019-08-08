@@ -15,7 +15,7 @@ ignore-patterns=
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
-init-hook='import sys; sys.path.append("ebr_trackerbot")'
+init-hook='import sys; sys.path.append("ebr_trackerbot"); sys.path.append("ebr_trackerbot/storage")'
 
 # Use multiple processes to speed up Pylint.
 jobs=1
