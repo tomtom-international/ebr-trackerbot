@@ -161,9 +161,6 @@ def test_slack_message_listener_keep_last_10_messages():
         }
     }
 
-    mock_web_client = Mock()
-    payload["web_client"] = mock_web_client
-
     for i in range(20):
         payload["data"]["client_msg_id"] = "123" + str(i)
         bot.slack_message_listener(bot_user, **payload)
