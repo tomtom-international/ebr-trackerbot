@@ -5,7 +5,7 @@ import logging
 from bot import register_command
 
 
-def help_command(text, result, payload, commands):
+def help_command(text, result, payload, config, commands):
     """
     Slack Bot Help Command
     """

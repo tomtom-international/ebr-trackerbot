@@ -24,7 +24,7 @@ def test_help_empty_command():
     text = "help"
     result = "help"
     commands = []
-    help_command(text, result, payload, commands)
+    help_command(text, result, payload, {}, commands)
 
 
 def post_message_empty_commands(channel, text, thread_ts):
@@ -43,7 +43,7 @@ def test_help_command():
     text = "help"
     result = "help"
     commands = [{"command": "test", "description": "some description"}]
-    help_command(text, result, payload, commands)
+    help_command(text, result, payload, {}, commands)
 
 
 def post_message_commands(channel, text, thread_ts):
@@ -62,7 +62,7 @@ def test_help_failed_command():
     text = "help"
     result = "help"
     commands = [{"command": "test", "description": "some description"}]
-    help_command(text, result, payload, commands)
+    help_command(text, result, payload, {}, commands)
 
 
 def post_message_failed_commands(channel, text, thread_ts):

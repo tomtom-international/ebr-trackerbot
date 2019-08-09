@@ -61,7 +61,7 @@ def test_slack_message_listener_incomplete_payload(caplog):
     """
     payload = {"data": {"type": "message"}}
     with caplog.at_level(logging.DEBUG):
-        bot.slack_message_listener("test_user", **payload)
+        bot.slack_message_listener("test_user", {}, **payload)
     assert "Missing one of: channel, ts, user, client_msg_id in slack message" in caplog.text
 
 
@@ -70,7 +70,7 @@ def test_slack_message_listener_no_user_mentioned(caplog, message_event_payload)
     Tests the slack_message_listener to ensure it logs a debug message if there is no bot user "at mentioned" nor has it been direct messaged
     """
     with caplog.at_level(logging.DEBUG):
-        bot.slack_message_listener("test_user", **message_event_payload)
+        bot.slack_message_listener("test_user", {}, **message_event_payload)
     assert 'Message does not "at mention" bot username' in caplog.text
 
 
@@ -87,7 +87,7 @@ def test_slack_message_listener_user_mentioned(caplog, message_event_payload):
     mock_web_client = Mock()
     payload["web_client"] = mock_web_client
 
-    bot.slack_message_listener(bot_user, **payload)
+    bot.slack_message_listener(bot_user, {}, **payload)
 
     mock_web_client.chat_postMessage.assert_called_once_with(
         channel=payload["data"]["channel"],
@@ -111,7 +111,7 @@ def test_slack_message_listener_direct_message(caplog, message_event_payload):
     mock_web_client = Mock()
     payload["web_client"] = mock_web_client
 
-    bot.slack_message_listener(bot_user, **payload)
+    bot.slack_message_listener(bot_user, {}, **payload)
 
     mock_web_client.chat_postMessage.assert_called_once_with(
         channel=payload["data"]["channel"],
@@ -120,3 +120,49 @@ def test_slack_message_listener_direct_message(caplog, message_event_payload):
         ),
         thread_ts=payload["data"]["ts"],
     )
+
+
+def test_slack_message_listener_skip_same_messages(caplog):
+    """
+    Tests the slack_message_listener
+    """
+    bot_user = "test_user"
+    payload = {
+        "data": {
+            "type": "message",
+            "client_msg_id": "1654564.546",
+            "channel": "test_channel",
+            "user": "test_sending_user",
+            "text": "list",
+            "ts": "1654654.0547",
+        }
+    }
+
+    with caplog.at_level(logging.DEBUG):
+        for i in range(20):
+            bot.slack_message_listener(bot_user, {}, **payload)
+        assert len(caplog.records) == 20
+        for record in caplog.records:
+            assert "Message already processed" == record.msg
+
+
+def test_slack_message_listener_keep_last_10_messages():
+    """
+    Tests the slack_message_listener
+    """
+    bot_user = "test_user"
+    payload = {
+        "data": {
+            "type": "message",
+            "client_msg_id": "1654564.546",
+            "channel": "test_channel",
+            "user": "test_sending_user",
+            "text": "bla",
+            "ts": "1654654.0547",
+        }
+    }
+
+    for i in range(20):
+        payload["data"]["client_msg_id"] = "123" + str(i)
+        bot.slack_message_listener(bot_user, {}, **payload)
+    assert len(STATE.last_msgs) == 10

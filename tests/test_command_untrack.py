@@ -29,7 +29,7 @@ def test_untrack_command():
     text = "untrack test"
     result = re.match("^untrack ([^ ]+)$", text, re.IGNORECASE)
     commands = []
-    untrack_command(text, result, payload, commands)
+    untrack_command(text, result, payload, {}, commands)
 
 
 def post_message_commands(channel, text, thread_ts):
