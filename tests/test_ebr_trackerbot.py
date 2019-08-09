@@ -26,7 +26,6 @@ def message_event_payload():
     return {
         "data": {
             "type": "message",
-            "msg_id": "123",
             "client_msg_id": "1654564.546",
             "channel": "test_channel",
             "user": "test_sending_user",
