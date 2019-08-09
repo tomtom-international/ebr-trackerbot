@@ -137,11 +137,6 @@ def test_slack_message_listener_skip_same_messages(caplog):
         }
     }
 
-    # Provide proper channel format
-    payload["data"]["channel"] = "Dchannel_name"
-    mock_web_client = Mock()
-    payload["web_client"] = mock_web_client
-
     with caplog.at_level(logging.DEBUG):
         for i in range(20):
             bot.slack_message_listener(bot_user, **payload)
@@ -166,8 +161,6 @@ def test_slack_message_listener_keep_last_10_messages():
         }
     }
 
-    # Provide proper channel format
-    payload["data"]["channel"] = "Dchannel_name"
     mock_web_client = Mock()
     payload["web_client"] = mock_web_client
 
