@@ -139,7 +139,7 @@ def test_slack_message_listener_skip_same_messages(caplog):
 
     with caplog.at_level(logging.DEBUG):
         for i in range(20):
-            bot.slack_message_listener(bot_user, **payload)
+            bot.slack_message_listener(bot_user, {}, **payload)
         assert len(caplog.records) == 20
         for record in caplog.records:
             assert "Message already processed" == record.msg
@@ -163,5 +163,5 @@ def test_slack_message_listener_keep_last_10_messages():
 
     for i in range(20):
         payload["data"]["client_msg_id"] = "123" + str(i)
-        bot.slack_message_listener(bot_user, **payload)
+        bot.slack_message_listener(bot_user, {}, **payload)
     assert len(STATE.last_msgs) == 10
