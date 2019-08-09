@@ -84,8 +84,8 @@ def slack_message_listener(bot_user, config_local, **payload):
     if msg_id in STATE.last_msgs:
         logging.debug("Message already processed")
         return
-    if len(STATE.last_msgs) > 10:
-        STATE.last_msgs.popleft()
+    if len(STATE.last_msgs) > 9:
+        STATE.last_msgs.pop(0)
     STATE.last_msgs.append(msg_id)
 
     logging.info("Incomming message from slack")
