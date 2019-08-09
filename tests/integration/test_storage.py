@@ -9,34 +9,30 @@ import os
 sys.path.append("ebr_trackerbot")
 sys.path.append("ebr_trackerbot/storage")
 
+from bot import config
+from state import STATE
+import pytest
+import sqlite
+import odbc
+import tempfile
+
 
 def delete_fixtures():
-    if os.path.exists("data.db"):
-        os.unlink("data.db")
-    if os.path.exists("data-odbc.db"):
-        os.unlink("data-odbc.db")
+    if os.path.exists(tempfile.gettempdir() + "/data.db"):
+        os.unlink(tempfile.gettempdir() + "/data.db")
+    if os.path.exists(tempfile.gettempdir() + "/data-odbc.db"):
+        os.unlink(tempfile.gettempdir() + "/data-odbc.db")
 
 
 def reset_fixtures():
     delete_fixtures()
-    open("data-odbc.db", "a").close()
-
-
-reset_fixtures()
-
-from bot import config
-from state import STATE
-
-config["odbc_connection_string"] = "DRIVER={SQLITE3};DATABASE=data-odbc.db"
-
-import pytest
-import sqlite
-import memory
-import odbc
+    open(tempfile.gettempdir() + "/data-odbc.db", "a").close()
 
 
 def test_storage():
-    modules = ["memory"]
+    reset_fixtures()
+    config["odbc_connection_string"] = "DRIVER={SQLITE3};DATABASE=" + tempfile.gettempdir() + "/data-odbc.db"
+    modules = ["odbc", "sqlite"]
 
     for module_name in modules:
         module = None

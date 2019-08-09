@@ -4,47 +4,49 @@ Slack Bot Generic DB Storage
 
 import logging
 import pendulum
+import sys
 
 
-def create_table(conn, error):
+def create_table(get_connection):
     """
     Create table if it does not exist
     """
+    conn = get_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute(""" SELECT count(name) FROM sqlite_master WHERE type='table' AND name='tracks' """)
-        if cursor.fetchone()[0] == 0:
-            cursor.execute(
-                "CREATE TABLE IF NOT EXISTS tracks "
-                + "(id integer PRIMARY KEY, user text NOT NULL, test text NOT NULL, "
-                + " expiry timestamp NOT NULL, channel_id text NOT NULL, thread_ts text NOT NULL);"
-            )
-            conn.commit()
-    except error as err:
-        logging.error(err)
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS tracks "
+            + "(id integer PRIMARY KEY, user text NOT NULL, test text NOT NULL, "
+            + " expiry timestamp NOT NULL, channel_id text NOT NULL, thread_ts text NOT NULL);"
+        )
+        conn.commit()
+    except:
+        logging.error(str(sys.exc_info()[1]))
         conn.close()
 
 
-def delete_for_user(conn, error, user, test):
+def delete_for_user(get_connection, user, test):
     """
     Delete tracking for user and test
     """
     logging.debug("Delete track for user: " + user + ", test: " + test)
+    conn = get_connection()
     try:
         cursor = conn.cursor()
         cursor.execute(""" DELETE FROM tracks WHERE user = ? AND test = ?; """, [user, test])
         conn.commit()
-    except error as err:
-        logging.error(err)
+    except:
+        logging.error(sys.exc_info()[1])
         conn.close()
 
 
-def save(conn, error, user, data):
+def save(get_connection, user, data):
     """
     Creates tracking for user and test
     """
     logging.debug("Saving track for user: %s, data: ", user)
     logging.debug(data)
+    conn = get_connection()
     try:
         cursor = conn.cursor()
         cursor.execute(
@@ -62,16 +64,17 @@ def save(conn, error, user, data):
                 [data["expiry"], data["channel_id"], data["thread_ts"], user, data["test"]],
             )
         conn.commit()
-    except error as err:
-        logging.error(err)
+    except:
+        logging.error(sys.exc_info()[1])
         conn.close()
 
 
-def load_all_tracked_tests(conn, error):
+def load_all_tracked_tests(get_connection):
     """
     Load all tracked tests
     """
     result = []
+    conn = get_connection()
     try:
         cursor = conn.cursor()
         cursor.execute(""" SELECT user, test, expiry, channel_id, thread_ts FROM tracks; """)
@@ -86,17 +89,18 @@ def load_all_tracked_tests(conn, error):
             }
             result.append(data)
         return result
-    except error as err:
+    except:
         logging.error("Error during loading tracks")
-        logging.error(err)
+        logging.error(sys.exc_info()[1])
         conn.close()
 
 
-def load_for_user(conn, error, user):
+def load_for_user(get_connection, user):
     """
     Load all tracks for user
     """
     result = []
+    conn = get_connection()
     try:
         cursor = conn.cursor()
         cursor.execute(""" SELECT user, test, expiry, channel_id, thread_ts FROM tracks WHERE user = ?; """, [user])
@@ -110,21 +114,22 @@ def load_for_user(conn, error, user):
             }
             result.append(data)
         return result
-    except error as err:
+    except:
         logging.error("Error during loading track for user")
-        logging.error(err)
+        logging.error(sys.exc_info()[1])
         conn.close()
 
 
-def clean_expired_tracks(conn, error):
+def clean_expired_tracks(get_connection):
     """
     Delete expired tracks
     """
+    conn = get_connection()
     try:
         cursor = conn.cursor()
         cursor.execute(""" DELETE FROM tracks WHERE expiry < DATETIME('now'); """)
         conn.commit()
-    except error as err:
+    except:
         logging.error("Error during cleaning tracks")
-        logging.error(err)
+        logging.error(sys.exc_info()[1])
         conn.close()

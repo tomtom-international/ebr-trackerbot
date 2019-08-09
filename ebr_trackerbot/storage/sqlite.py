@@ -7,23 +7,31 @@ import db
 from functools import partial
 from bot import config, register_storage
 import logging
+import tempfile
 
 
-def get_filename():
-    """
-    Returns the filename for the sqlite db
-    """
-    return config.get("sqlite_filename", "data.db")
+def get_connection(config):
+    if get_connection.link is None:
+        get_connection.link = sqlite3.connect(config.get("sqlite_filename", tempfile.gettempdir() + "/data.db"))
+        db.create_table(lambda: get_connection.link)
+    try:
+        cursor = get_connection.link.cursor()
+        cursor.close()
+    except:
+        get_connection.link = sqlite3.connect(config.get("sqlite_filename", tempfile.gettempdir() + "/data.db"))
+        db.create_table(lambda: get_connection.link)
+
+    return get_connection.link
 
 
-CONN = sqlite3.connect(get_filename())
-db.create_table(CONN, sqlite3.Error)
+get_connection.link = None
+
 register_storage(
     "sqlite",
-    partial(db.save, CONN, sqlite3.Error),
-    partial(db.load_for_user, CONN, sqlite3.Error),
-    partial(db.load_all_tracked_tests, CONN, sqlite3.Error),
-    partial(db.delete_for_user, CONN, sqlite3.Error),
-    partial(db.clean_expired_tracks, CONN, sqlite3.Error),
+    partial(db.save, partial(get_connection, config)),
+    partial(db.load_for_user, partial(get_connection, config)),
+    partial(db.load_all_tracked_tests, partial(get_connection, config)),
+    partial(db.delete_for_user, partial(get_connection, config)),
+    partial(db.clean_expired_tracks, partial(get_connection, config)),
 )
 logging.info("SQLite storage registered")

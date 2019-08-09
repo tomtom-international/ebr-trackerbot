@@ -9,23 +9,36 @@ import db
 from functools import partial
 
 
-def get_connection():
+def create_connection(config):
+    if config.get("odbc_connection_string") is None:
+        raise RuntimeError("Missing odbc_connection_string in configuration")
+    link = pyodbc.connect(config.get("odbc_connection_string"))
+    db.create_table(lambda: link)
+    return link
+
+
+def get_connection(config):
     """
     Retrieve odbc connection
     """
-    if config.get("odbc_connection_string") is None:
-        raise RuntimeError("Missing odbc_connection_string in configuration")
-    return pyodbc.connect(config.get("odbc_connection_string"))
+    if get_connection.link is None:
+        get_connection.link = create_connection(config)
+    try:
+        cursor = get_connection.link.cursor()
+        cursor.close()
+    except:
+        get_connection.link = create_connection(config)
+    return get_connection.link
 
 
-CONN = get_connection()
-db.create_table(get_connection(), pyodbc.DatabaseError)
+get_connection.link = None
+
 register_storage(
     "odbc",
-    partial(db.save, CONN, pyodbc.DatabaseError),
-    partial(db.load_for_user, CONN, pyodbc.DatabaseError),
-    partial(db.load_all_tracked_tests, CONN, pyodbc.DatabaseError),
-    partial(db.delete_for_user, CONN, pyodbc.DatabaseError),
-    partial(db.clean_expired_tracks, CONN, pyodbc.DatabaseError),
+    partial(db.save, partial(get_connection, config)),
+    partial(db.load_for_user, partial(get_connection, config)),
+    partial(db.load_all_tracked_tests, partial(get_connection, config)),
+    partial(db.delete_for_user, partial(get_connection, config)),
+    partial(db.clean_expired_tracks, partial(get_connection, config)),
 )
 logging.info("ODBC storage registered")
