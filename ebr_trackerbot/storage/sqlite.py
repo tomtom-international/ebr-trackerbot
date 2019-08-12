@@ -3,11 +3,11 @@ Slack Bot SQLite Storage
 """
 
 import sqlite3
-import db
-from functools import partial
-from bot import config, register_storage
 import logging
 import tempfile
+from functools import partial
+from ebr_trackerbot.storage import db
+from ebr_trackerbot.bot import config, register_storage
 
 
 def get_connection(config):

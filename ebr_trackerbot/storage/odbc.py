@@ -4,8 +4,8 @@ Slack Bot ODBC Storage
 
 import pyodbc
 import logging
-from bot import register_storage, config
-import db
+from ebr_trackerbot.bot import register_storage, config
+from ebr_trackerbot.storage import db
 from functools import partial
 
 

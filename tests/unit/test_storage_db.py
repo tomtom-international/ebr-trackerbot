@@ -3,14 +3,9 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import sys
 import os
-
-sys.path.append("ebr_trackerbot")
-sys.path.append("ebr_trackerbot/storage")
-
 import logging
-import db
+import ebr_trackerbot.storage.db as db
 from unittest.mock import Mock
 
 

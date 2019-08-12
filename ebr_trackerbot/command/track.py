@@ -4,8 +4,7 @@ Slack Bot Track Command
 
 import logging
 
-from bot import register_command
-from bot import get_storage
+from ebr_trackerbot.bot import register_command, get_storage
 from time_utility import parse_time_delta_input
 
 

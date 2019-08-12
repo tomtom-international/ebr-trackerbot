@@ -3,16 +3,11 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import sys
 import os
 import re
-
-sys.path.append("ebr_trackerbot")
-sys.path.append("ebr_trackerbot/command")
-
 import pytest
-from track import track_command
-from bot import register_storage, get_storage, config
+from ebr_trackerbot.command.track import track_command
+from ebr_trackerbot.bot import register_storage, get_storage, config
 
 
 def test_track_command():

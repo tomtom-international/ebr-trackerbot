@@ -2,8 +2,7 @@
 Slack Bot Untrack Command
 """
 import logging
-from bot import register_command
-from bot import get_storage
+from ebr_trackerbot.bot import register_command, get_storage
 
 
 def untrack_command(text, result, payload, config, commands):

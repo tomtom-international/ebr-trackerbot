@@ -3,14 +3,9 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import sys
 import os
-
-sys.path.append("ebr_trackerbot")
-sys.path.append("ebr_trackerbot/command")
-
 import pytest
-from help import help_command
+from ebr_trackerbot.command.help import help_command
 
 
 def test_help_empty_command():

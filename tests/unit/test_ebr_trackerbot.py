@@ -3,18 +3,14 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import sys
 import os
 import pytest
 import logging
 
 from unittest.mock import Mock, patch
 
-sys.path.append("ebr_trackerbot")
-
 import pytest
-import bot
-from state import STATE
+import ebr_trackerbot.bot as bot
 
 
 @pytest.fixture
@@ -38,13 +34,13 @@ def message_event_payload():
 def test_register_command():
     """Register command test"""
     bot.register_command("test", "description", "regex", "callback")
-    assert "test" in map(lambda x: x["command"], STATE.bot_command)
+    assert "test" in map(lambda x: x["command"], bot.STATE.bot_command)
 
 
 def test_register_storage():
     """Register storage test"""
     bot.register_storage("test", "save", "load_for_user", "load_all", "delete_for_user", "clean_expired_tracks")
-    assert "test" in map(lambda x: x["name"], STATE.bot_storage)
+    assert "test" in map(lambda x: x["name"], bot.STATE.bot_storage)
 
 
 def test_get_storage():
@@ -84,6 +80,7 @@ def test_slack_message_listener_user_mentioned(caplog, message_event_payload):
 
     # Provide @mention for message
     payload["data"]["text"] = "<@{user}> bad_command".format(user=bot_user)
+    payload["data"]["client_msg_id"] = "123455"
     mock_web_client = Mock()
     payload["web_client"] = mock_web_client
 
@@ -108,6 +105,8 @@ def test_slack_message_listener_direct_message(caplog, message_event_payload):
 
     # Provide proper channel format
     payload["data"]["channel"] = "Dchannel_name"
+    payload["data"]["client_msg_id"] = "123456"
+    payload["data"]["text"] = "unknown"
     mock_web_client = Mock()
     payload["web_client"] = mock_web_client
 
@@ -165,4 +164,4 @@ def test_slack_message_listener_keep_last_10_messages():
     for i in range(20):
         payload["data"]["client_msg_id"] = "123" + str(i)
         bot.slack_message_listener(bot_user, {}, **payload)
-    assert len(STATE.last_msgs) == 10
+    assert len(bot.STATE.last_msgs) == 10

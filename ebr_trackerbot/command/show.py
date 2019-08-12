@@ -6,7 +6,7 @@ import logging
 import requests
 import pendulum
 
-from bot import register_command
+from ebr_trackerbot.bot import register_command
 from time_utility import parse_time_delta_input
 
 

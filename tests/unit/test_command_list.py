@@ -3,15 +3,10 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import sys
 import os
-
-sys.path.append("ebr_trackerbot")
-sys.path.append("ebr_trackerbot/command")
-
 import pytest
-from list import list_command
-from bot import register_storage, config
+from ebr_trackerbot.command.list import list_command
+from ebr_trackerbot.bot import register_storage, config
 
 
 def test_list_command():

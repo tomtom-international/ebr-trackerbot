@@ -3,18 +3,11 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import sys
 import os
-
-sys.path.append("ebr_trackerbot")
-sys.path.append("ebr_trackerbot/storage")
-
-from bot import config
-from state import STATE
 import pytest
-import sqlite
-import odbc
 import tempfile
+from ebr_trackerbot import bot
+from ebr_trackerbot.storage import sqlite, odbc
 
 
 def delete_fixtures():
@@ -31,12 +24,12 @@ def reset_fixtures():
 
 def test_storage():
     reset_fixtures()
-    config["odbc_connection_string"] = "DRIVER={SQLITE3};DATABASE=" + tempfile.gettempdir() + "/data-odbc.db"
+    bot.config["odbc_connection_string"] = "DRIVER={SQLITE3};DATABASE=" + tempfile.gettempdir() + "/data-odbc.db"
     modules = ["odbc", "sqlite"]
 
     for module_name in modules:
         module = None
-        for storage in STATE.bot_storage:
+        for storage in bot.STATE.bot_storage:
             if storage["name"] == module_name:
                 module = storage
                 break
