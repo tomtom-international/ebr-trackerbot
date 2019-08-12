@@ -6,17 +6,16 @@
 import re
 from ebr_trackerbot.command.untrack import untrack_command
 from ebr_trackerbot.bot import register_storage, get_storage, config
-from tests.unit.common import get_payload
 
 
-def test_untrack_command():
+def test_untrack_command(test_payload):
     """
     Test untrack command
     """
     config["storage_backend"] = "test"
     register_storage("test", "save", "load_for_user", "load_all", delete, "clean_expired_tracks")
     assert get_storage()["delete_for_user"] == delete  # pylint: disable=comparison-with-callable
-    payload = get_payload(post_message_commands)
+    payload = test_payload(post_message_commands)
     text = "untrack test"
     result = re.match("^untrack ([^ ]+)$", text, re.IGNORECASE)
     commands = []

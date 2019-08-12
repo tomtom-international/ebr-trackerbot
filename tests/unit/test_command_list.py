@@ -5,16 +5,15 @@
 
 from ebr_trackerbot.command.list import list_command
 from ebr_trackerbot.bot import register_storage, config
-from tests.unit.common import get_payload
 
 
-def test_list_command():
+def test_list_command(test_payload):
     """
     Test list command
     """
     config["storage_backend"] = "test"
     register_storage("test", "save", load_for_user, "load_all", "delete_for_user", "clean_expired_tracks")
-    payload = get_payload(post_message_commands)
+    payload = test_payload(post_message_commands)
     text = "list"
     result = "list"
     commands = []

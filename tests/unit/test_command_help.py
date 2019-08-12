@@ -4,14 +4,13 @@
 """Tests for `ebr_trackerbot` package."""
 
 from ebr_trackerbot.command.help import help_command
-from tests.unit.common import get_payload
 
 
-def test_help_empty_command():
+def test_help_empty_command(test_payload):
     """
     Check command output when there are no registered commands
     """
-    payload = get_payload(post_message_empty_commands)
+    payload = test_payload(post_message_empty_commands)
     text = "help"
     result = "help"
     commands = []
@@ -26,11 +25,11 @@ def post_message_empty_commands(channel, text, thread_ts):
     return {"ok": "ok"}
 
 
-def test_help_command():
+def test_help_command(test_payload):
     """
     Check command output where there is one command
     """
-    payload = get_payload(post_message_commands)
+    payload = test_payload(post_message_commands)
     text = "help"
     result = "help"
     commands = [{"command": "test", "description": "some description"}]
@@ -45,11 +44,11 @@ def post_message_commands(channel, text, thread_ts):
     return {"ok": "ok"}
 
 
-def test_help_failed_command():
+def test_help_failed_command(test_payload):
     """
     Check behavior when sending slack message failed
     """
-    payload = get_payload(post_message_failed_commands)
+    payload = test_payload(post_message_failed_commands)
     text = "help"
     result = "help"
     commands = [{"command": "test", "description": "some description"}]
