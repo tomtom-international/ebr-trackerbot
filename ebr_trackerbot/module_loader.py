@@ -25,4 +25,4 @@ def load(path, package_name):
         try:
             globals_variables[mod_name] = importlib.import_module("." + mod_name, package=package_name)
         except ImportError as err:
-            logging.error("Can not load module '" + mod_name + "' in folder '" + path + "'. Error: " + str(err))
+            logging.error("Can not load module '%s' in folder '%s'. Error: %s", mod_name, path, str(err))
