@@ -3,13 +3,9 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import os
 import pytest
 import logging
-
 from unittest.mock import Mock, patch
-
-import pytest
 import ebr_trackerbot.bot as bot
 
 
@@ -48,7 +44,7 @@ def test_get_storage():
     bot.register_storage("test", "save", "load_for_user", "load_all", "delete_for_user", "clean_expired_tracks")
     bot.config["storage_backend"] = "test"
     assert "save" in bot.get_storage()
-    assert "save" == bot.get_storage()["save"]
+    assert bot.get_storage()["save"] == "save"
 
 
 def test_slack_message_listener_incomplete_payload(caplog):
@@ -61,7 +57,9 @@ def test_slack_message_listener_incomplete_payload(caplog):
     assert "Missing one of: channel, ts, user, client_msg_id in slack message" in caplog.text
 
 
-def test_slack_message_listener_no_user_mentioned(caplog, message_event_payload):
+def test_slack_message_listener_no_user_mentioned(
+    caplog, message_event_payload
+):  # pylint: disable=redefined-outer-name
     """
     Tests the slack_message_listener to ensure it logs a debug message if there is no bot user "at mentioned" nor has it been direct messaged
     """
@@ -71,7 +69,7 @@ def test_slack_message_listener_no_user_mentioned(caplog, message_event_payload)
 
 
 @patch("bot.STATE", autospec=False)
-def test_slack_message_listener_user_mentioned(caplog, message_event_payload):
+def test_slack_message_listener_user_mentioned(caplog, message_event_payload):  # pylint: disable=redefined-outer-name
     """
     Tests the slack_message_listener to ensure it processes the command when the slackbot user is "at mentioned"
     """
@@ -96,9 +94,9 @@ def test_slack_message_listener_user_mentioned(caplog, message_event_payload):
 
 
 @patch("bot.STATE", autospec=False)
-def test_slack_message_listener_direct_message(caplog, message_event_payload):
+def test_slack_message_listener_direct_message(caplog, message_event_payload):  # pylint: disable=redefined-outer-name
     """
-    Tests the slack_message_listener to ensure it processes the command when the slackbot user is sent a DM
+    Tests the slack_message_listener to ensure it processes the command when the slackbot user is sent a direct message
     """
     bot_user = "test_user"
     payload = message_event_payload
@@ -138,11 +136,11 @@ def test_slack_message_listener_skip_same_messages(caplog):
     }
 
     with caplog.at_level(logging.DEBUG):
-        for i in range(20):
+        for _ in range(20):
             bot.slack_message_listener(bot_user, {}, **payload)
         assert len(caplog.records) == 20
         for record in caplog.records:
-            assert "Message already processed" == record.msg
+            assert record.msg == "Message already processed"
 
 
 def test_slack_message_listener_keep_last_10_messages():

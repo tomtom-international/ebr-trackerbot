@@ -3,12 +3,13 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import os
-import pytest
 from checker import send_track
 
 
 def test_send_track():
+    """
+    Check that slack message is send when tests failed in the last period
+    """
     track = {}
     track["test"] = "test"
     track["channel_id"] = "test"
@@ -28,10 +29,16 @@ def test_send_track():
 
 
 def post_message(channel, text, thread_ts):
+    """
+    Check slack message
+    """
     assert text == "Test *test* failed *1x* in the last 2 hours\nhttp://test-url?test=test"
 
 
 def test_send_track_no_custom_slack_message():
+    """
+    Check default slack message
+    """
     track = {}
     track["test"] = "test"
     track["channel_id"] = "test"
@@ -45,4 +52,7 @@ def test_send_track_no_custom_slack_message():
 
 
 def post_message_no_custom_slack_message(channel, text, thread_ts):
+    """
+    Check slack message
+    """
     assert text == ""

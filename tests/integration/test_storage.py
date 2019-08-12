@@ -7,10 +7,12 @@ import os
 import pytest
 import tempfile
 from ebr_trackerbot import bot
-from ebr_trackerbot.storage import sqlite, odbc
 
 
 def delete_fixtures():
+    """
+    Delete sqlite files
+    """
     if os.path.exists(tempfile.gettempdir() + "/data.db"):
         os.unlink(tempfile.gettempdir() + "/data.db")
     if os.path.exists(tempfile.gettempdir() + "/data-odbc.db"):
@@ -18,38 +20,47 @@ def delete_fixtures():
 
 
 def setup_module():
+    """
+    Setup environment for tests
+    """
     bot.config["odbc_connection_string"] = "DRIVER={SQLITE3};DATABASE=" + tempfile.gettempdir() + "/data-odbc.db"
     delete_fixtures()
     open(tempfile.gettempdir() + "/data-odbc.db", "a").close()
 
 
 def teardown_module():
+    """
+    Cleanup
+    """
     delete_fixtures()
 
 
 @pytest.mark.parametrize("module_name", ["odbc", "sqlite"])
 def test_storage(module_name):
+    """
+    Integration test for storage
+    """
     module = None
     for storage in bot.STATE.bot_storage:
         if storage["name"] == module_name:
             module = storage
             break
-    assert len(module["load_all_tracked_tests"]()) == 0
+    assert not module["load_all_tracked_tests"]()
     module["save"](
         "test-user", {"test": "abc", "expiry": "2100-01-01T00:00:00Z", "channel_id": "test", "thread_ts": "0123"}
     )
     assert len(module["load_all_tracked_tests"]()) == 1
     assert len(module["load_for_user"]("test-user")) == 1
-    assert len(module["load_for_user"]("non-existing-user")) == 0
+    assert not module["load_for_user"]("non-existing-user")
     module["delete_for_user"]("test-user", "abc")
-    assert len(module["load_all_tracked_tests"]()) == 0
-    assert len(module["load_for_user"]("test-user")) == 0
+    assert not module["load_all_tracked_tests"]()
+    assert not module["load_for_user"]("test-user")
     module["save"](
         "test-user", {"test": "abc", "expiry": "2000-01-01T00:00:00Z", "channel_id": "test", "thread_ts": "0123"}
     )
     module["clean_expired_tracks"]()
-    assert len(module["load_all_tracked_tests"]()) == 0
-    assert len(module["load_for_user"]("test-user")) == 0
+    assert not module["load_all_tracked_tests"]()
+    assert not module["load_for_user"]("test-user")
     module["save"](
         "test-user", {"test": "abc", "expiry": "2000-01-01T00:00:00Z", "channel_id": "test", "thread_ts": "0123"}
     )

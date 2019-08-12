@@ -3,22 +3,18 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import os
-import pytest
 from ebr_trackerbot.command.list import list_command
 from ebr_trackerbot.bot import register_storage, config
+from tests.unit.common import get_payload
 
 
 def test_list_command():
+    """
+    Test list command
+    """
     config["storage_backend"] = "test"
     register_storage("test", "save", load_for_user, "load_all", "delete_for_user", "clean_expired_tracks")
-    payload = {}
-    payload["web_client"] = type("", (), {})()
-    payload["web_client"].chat_postMessage = post_message_commands
-    payload["data"] = {}
-    payload["data"]["user"] = "test"
-    payload["data"]["channel"] = "test"
-    payload["data"]["ts"] = "test"
+    payload = get_payload(post_message_commands)
     text = "list"
     result = "list"
     commands = []
@@ -26,9 +22,15 @@ def test_list_command():
 
 
 def post_message_commands(channel, text, thread_ts):
+    """
+    Check slack message
+    """
     assert text == "Tracking for following tests:\n*test* (2100-01-01 00:00:00)\n"
     return {"ok": "ok"}
 
 
 def load_for_user(user):
+    """
+    Load record for user
+    """
     return [{"test": "test", "expiry": "2100-01-01 00:00:00"}]

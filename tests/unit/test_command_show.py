@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""Tests for the show command"""
+
 import re
 import pendulum
 import pytest
@@ -9,11 +11,7 @@ from unittest.mock import patch, Mock
 
 from command import show
 
-"""
-Tests for the show command
-"""
-
-show_command_inputs = [
+show_command_inputs = [  # pylint: disable=invalid-name
     ({}, "Something went wrong, please report this failure.", None),
     (
         {"tests": [{"full_name": "bad.not_test", "count": 1}, {"full_name": "some.test", "count": 3}]},
@@ -31,6 +29,9 @@ show_command_inputs = [
 @pytest.mark.parametrize("ebr_board_response, result_text, count", show_command_inputs)
 @patch("command.show.requests.get")
 def test_show_command_outputs(mock_requests_get, ebr_board_response, result_text, count):
+    """
+    Test show command outputs
+    """
     days = 3
     target_test = "some.test"
     regex_match = "^show ([^ ]+) over ((?:[0-9]+(?:s|m|h|d))+)$"

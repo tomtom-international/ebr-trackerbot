@@ -3,19 +3,15 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import os
-import pytest
 from ebr_trackerbot.command.help import help_command
+from tests.unit.common import get_payload
 
 
 def test_help_empty_command():
-    payload = {}
-    payload["web_client"] = type("", (), {})()
-    payload["web_client"].chat_postMessage = post_message_empty_commands
-    payload["data"] = {}
-    payload["data"]["user"] = "test"
-    payload["data"]["channel"] = "test"
-    payload["data"]["ts"] = "test"
+    """
+    Check command output when there are no registered commands
+    """
+    payload = get_payload(post_message_empty_commands)
     text = "help"
     result = "help"
     commands = []
@@ -23,18 +19,18 @@ def test_help_empty_command():
 
 
 def post_message_empty_commands(channel, text, thread_ts):
+    """
+    Check slack message when there are no registered commands
+    """
     assert text == "Hi <@test>! \nSupported commands:\n"
     return {"ok": "ok"}
 
 
 def test_help_command():
-    payload = {}
-    payload["web_client"] = type("", (), {})()
-    payload["web_client"].chat_postMessage = post_message_commands
-    payload["data"] = {}
-    payload["data"]["user"] = "test"
-    payload["data"]["channel"] = "test"
-    payload["data"]["ts"] = "test"
+    """
+    Check command output where there is one command
+    """
+    payload = get_payload(post_message_commands)
     text = "help"
     result = "help"
     commands = [{"command": "test", "description": "some description"}]
@@ -42,18 +38,18 @@ def test_help_command():
 
 
 def post_message_commands(channel, text, thread_ts):
+    """
+    Check slack message when there is one command
+    """
     assert text == "Hi <@test>! \nSupported commands:\n*test* some description\n"
     return {"ok": "ok"}
 
 
 def test_help_failed_command():
-    payload = {}
-    payload["web_client"] = type("", (), {})()
-    payload["web_client"].chat_postMessage = post_message_failed_commands
-    payload["data"] = {}
-    payload["data"]["user"] = "test"
-    payload["data"]["channel"] = "test"
-    payload["data"]["ts"] = "test"
+    """
+    Check behavior when sending slack message failed
+    """
+    payload = get_payload(post_message_failed_commands)
     text = "help"
     result = "help"
     commands = [{"command": "test", "description": "some description"}]
@@ -61,4 +57,7 @@ def test_help_failed_command():
 
 
 def post_message_failed_commands(channel, text, thread_ts):
+    """
+    Test when something failed
+    """
     return {"failed": "failed"}

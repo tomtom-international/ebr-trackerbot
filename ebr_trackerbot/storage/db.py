@@ -4,7 +4,22 @@ Slack Bot Generic DB Storage
 
 import logging
 import pendulum
-import sys
+import ebr_trackerbot.bot as bot
+from functools import partial
+
+
+def register_storage(name, get_connection):
+    """
+    Register storage for slackbot
+    """
+    bot.register_storage(
+        name,
+        partial(save, get_connection),
+        partial(load_for_user, get_connection),
+        partial(load_all_tracked_tests, get_connection),
+        partial(delete_for_user, get_connection),
+        partial(clean_expired_tracks, get_connection),
+    )
 
 
 def create_table(get_connection):
@@ -16,8 +31,8 @@ def create_table(get_connection):
     with conn:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS tracks "
-            + "(id integer PRIMARY KEY, user text NOT NULL, test text NOT NULL, "
-            + " expiry timestamp NOT NULL, channel_id text NOT NULL, thread_ts text NOT NULL);"
+            + "(id integer PRIMARY KEY, user text NOT NULL, test text NOT NULL,"
+            + " expiry timestamp NOT NULL, channel_id text NOT NULL, thread_ts text NOT NULL)"
         )
 
 
