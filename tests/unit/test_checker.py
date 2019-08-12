@@ -3,7 +3,7 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-from checker import send_track
+from ebr_trackerbot.checker import send_track
 
 
 def test_send_track():
