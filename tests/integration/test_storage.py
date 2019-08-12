@@ -27,7 +27,7 @@ def teardown_module():
     delete_fixtures()
 
 
-@pytest.mark.parametrize("module_name", ["odbc", "sqlite"])
+@pytest.mark.parametrize("module_name", ["odbc"])
 def test_storage(module_name):
     module = None
     for storage in bot.STATE.bot_storage:

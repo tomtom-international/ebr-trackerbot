@@ -12,17 +12,13 @@ def create_table(get_connection):
     Create table if it does not exist
     """
     conn = get_connection()
-    try:
-        cursor = conn.cursor()
+    cursor = conn.cursor()
+    with conn:
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS tracks "
             + "(id integer PRIMARY KEY, user text NOT NULL, test text NOT NULL, "
             + " expiry timestamp NOT NULL, channel_id text NOT NULL, thread_ts text NOT NULL);"
         )
-        conn.commit()
-    except:
-        logging.error(str(sys.exc_info()[1]))
-        conn.close()
 
 
 def delete_for_user(get_connection, user, test):
@@ -31,13 +27,9 @@ def delete_for_user(get_connection, user, test):
     """
     logging.debug("Delete track for user: " + user + ", test: " + test)
     conn = get_connection()
-    try:
-        cursor = conn.cursor()
-        cursor.execute(""" DELETE FROM tracks WHERE user = ? AND test = ?; """, [user, test])
-        conn.commit()
-    except:
-        logging.error(sys.exc_info()[1])
-        conn.close()
+    cursor = conn.cursor()
+    with conn:
+        cursor.execute("DELETE FROM tracks WHERE user = ? AND test = ?", [user, test])
 
 
 def save(get_connection, user, data):
@@ -47,26 +39,22 @@ def save(get_connection, user, data):
     logging.debug("Saving track for user: %s, data: ", user)
     logging.debug(data)
     conn = get_connection()
-    try:
-        cursor = conn.cursor()
+    cursor = conn.cursor()
+    with conn:
         cursor.execute(
-            """ SELECT expiry, channel_id, thread_ts FROM tracks WHERE user = ? AND test = ? """, [user, data["test"]]
+            "SELECT expiry, channel_id, thread_ts FROM tracks WHERE user = ? AND test = ?", [user, data["test"]]
         )
         rows = cursor.fetchall()
         if not rows:
             cursor.execute(
-                """ INSERT INTO tracks (user, test, expiry, channel_id, thread_ts) VALUES (?, ?, ?, ?, ?); """,
+                "INSERT INTO tracks (user, test, expiry, channel_id, thread_ts) VALUES (?, ?, ?, ?, ?)",
                 [user, data["test"], data["expiry"], data["channel_id"], data["thread_ts"]],
             )
         else:
             cursor.execute(
-                """ UPDATE tracks SET expiry = ?, channel_id = ?, thread_ts = ? WHERE user = ? AND test = ? """,
+                "UPDATE tracks SET expiry = ?, channel_id = ?, thread_ts = ? WHERE user = ? AND test = ?",
                 [data["expiry"], data["channel_id"], data["thread_ts"], user, data["test"]],
             )
-        conn.commit()
-    except:
-        logging.error(sys.exc_info()[1])
-        conn.close()
 
 
 def load_all_tracked_tests(get_connection):
@@ -75,9 +63,9 @@ def load_all_tracked_tests(get_connection):
     """
     result = []
     conn = get_connection()
-    try:
-        cursor = conn.cursor()
-        cursor.execute(""" SELECT user, test, expiry, channel_id, thread_ts FROM tracks; """)
+    cursor = conn.cursor()
+    with conn:
+        cursor.execute("SELECT user, test, expiry, channel_id, thread_ts FROM tracks")
         rows = cursor.fetchall()
         for row in rows:
             data = {
@@ -89,10 +77,6 @@ def load_all_tracked_tests(get_connection):
             }
             result.append(data)
         return result
-    except:
-        logging.error("Error during loading tracks")
-        logging.error(sys.exc_info()[1])
-        conn.close()
 
 
 def load_for_user(get_connection, user):
@@ -101,9 +85,9 @@ def load_for_user(get_connection, user):
     """
     result = []
     conn = get_connection()
-    try:
-        cursor = conn.cursor()
-        cursor.execute(""" SELECT user, test, expiry, channel_id, thread_ts FROM tracks WHERE user = ?; """, [user])
+    cursor = conn.cursor()
+    with conn:
+        cursor.execute("SELECT user, test, expiry, channel_id, thread_ts FROM tracks WHERE user = ?", [user])
         rows = cursor.fetchall()
         for row in rows:
             data = {
@@ -114,10 +98,6 @@ def load_for_user(get_connection, user):
             }
             result.append(data)
         return result
-    except:
-        logging.error("Error during loading track for user")
-        logging.error(sys.exc_info()[1])
-        conn.close()
 
 
 def clean_expired_tracks(get_connection):
@@ -125,11 +105,6 @@ def clean_expired_tracks(get_connection):
     Delete expired tracks
     """
     conn = get_connection()
-    try:
-        cursor = conn.cursor()
-        cursor.execute(""" DELETE FROM tracks WHERE expiry < DATETIME('now'); """)
-        conn.commit()
-    except:
-        logging.error("Error during cleaning tracks")
-        logging.error(sys.exc_info()[1])
-        conn.close()
+    cursor = conn.cursor()
+    with conn:
+        cursor.execute("DELETE FROM tracks WHERE expiry < DATETIME('now')")
