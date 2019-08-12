@@ -2,7 +2,7 @@
 Slack Bot Help Command
 """
 import logging
-from bot import register_command
+from ebr_trackerbot.bot import register_command
 
 
 def help_command(text, result, payload, config, commands):

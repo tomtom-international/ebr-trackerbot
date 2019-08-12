@@ -25,6 +25,7 @@ requirements = [
     "pendulum>=2.0.5,<3.0.0",
     "vault-anyconfig>=0.2.2,<0.3.0",
     "PyYAML>=5.1,<6",
+    "pyodbc>=4.0.27,<4.1.0",
 ]
 
 setup_requirements = ["pytest-runner"]

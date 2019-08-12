@@ -10,6 +10,9 @@ from ebr_trackerbot import bot
 
 @patch("ebr_trackerbot.bot.VaultAnyConfig")
 def test_configure(mock_va):
+    """
+    Test configuration
+    """
     sample_config = {"ebr-trackerbot": {"api_url": "https:/test_url.com", "slack_token": "test-token"}}
 
     mock_va.return_value.auth_from_file = Mock(return_value=True)
@@ -28,14 +31,20 @@ def test_configure(mock_va):
     assert bot.config["slack_message_template"] == "Test *{{test}}* failed *{{count}}* in the last {{period}}\n"
 
 
-configs = [{"ebr-trackerbot": {"slack_token": "test-token"}}, {"ebr-trackerbot": {"api_url": "http://test_url.com"}}]
+configs = [  # pylint: disable=invalid-name
+    {"ebr-trackerbot": {"slack_token": "test-token"}},
+    {"ebr-trackerbot": {"api_url": "http://test_url.com"}},
+]
 
 
 @pytest.mark.parametrize("config", configs)
 @patch("ebr_trackerbot.bot.VaultAnyConfig")
 def test_fail_missing_api(mock_va, config):
+    """
+    Test fail missing api
+    """
     mock_va.return_value.auth_from_file = Mock(return_value=True)
     mock_va.return_value.load = Mock(return_value=config)
 
-    with pytest.raises(RuntimeError) as error:
+    with pytest.raises(RuntimeError):
         bot.configure("test_config.yaml", "test_vault.yaml", "test_creds.yaml")

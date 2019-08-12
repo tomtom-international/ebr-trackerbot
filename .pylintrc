@@ -3,7 +3,7 @@
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
 # run arbitrary code
-extension-pkg-whitelist=
+extension-pkg-whitelist=pyodbc
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
@@ -15,7 +15,7 @@ ignore-patterns=
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
-init-hook='import sys; sys.path.append("ebr_trackerbot")'
+init-hook='import sys; sys.path.append("ebr_trackerbot"); sys.path.append("ebr_trackerbot/storage")'
 
 # Use multiple processes to speed up Pylint.
 jobs=1
@@ -202,7 +202,7 @@ max-spelling-suggestions=4
 spelling-dict=en_US
 
 # List of comma separated words that should not be checked.
-spelling-ignore-words=args, bool, yaml, str, config, py, dicts, api, ebr, trackerbot, pragma, commandline, untrack, sqlite, storages, msg, slackbot, filename, bot's, UTC
+spelling-ignore-words=args, bool, yaml, str, config, py, dicts, api, ebr, trackerbot, pragma, commandline, untrack, sqlite, storages, msg, slackbot, filename, bot's, UTC, odbc, CLI
 
 # A path to a file that contains private dictionary; one word per line.
 spelling-private-dict-file=

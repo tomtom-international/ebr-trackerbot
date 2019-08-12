@@ -3,18 +3,10 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import sys
-import os
 import pytest
 import logging
-
 from unittest.mock import Mock, patch
-
-sys.path.append("ebr_trackerbot")
-
-import pytest
-import bot
-from state import STATE
+import ebr_trackerbot.bot as bot
 
 
 @pytest.fixture
@@ -38,20 +30,21 @@ def message_event_payload():
 def test_register_command():
     """Register command test"""
     bot.register_command("test", "description", "regex", "callback")
-    assert "test" in map(lambda x: x["command"], STATE.bot_command)
+    assert "test" in map(lambda x: x["command"], bot.STATE.bot_command)
 
 
 def test_register_storage():
     """Register storage test"""
     bot.register_storage("test", "save", "load_for_user", "load_all", "delete_for_user", "clean_expired_tracks")
-    assert "test" in map(lambda x: x["name"], STATE.bot_storage)
+    assert "test" in map(lambda x: x["name"], bot.STATE.bot_storage)
 
 
 def test_get_storage():
     """Get storage test"""
-    bot.register_storage("memory", "save", "load_for_user", "load_all", "delete_for_user", "clean_expired_tracks")
+    bot.register_storage("test", "save", "load_for_user", "load_all", "delete_for_user", "clean_expired_tracks")
+    bot.config["storage_backend"] = "test"
     assert "save" in bot.get_storage()
-    assert "save" == bot.get_storage()["save"]
+    assert bot.get_storage()["save"] == "save"
 
 
 def test_slack_message_listener_incomplete_payload(caplog):
@@ -64,7 +57,9 @@ def test_slack_message_listener_incomplete_payload(caplog):
     assert "Missing one of: channel, ts, user, client_msg_id in slack message" in caplog.text
 
 
-def test_slack_message_listener_no_user_mentioned(caplog, message_event_payload):
+def test_slack_message_listener_no_user_mentioned(
+    caplog, message_event_payload
+):  # pylint: disable=redefined-outer-name
     """
     Tests the slack_message_listener to ensure it logs a debug message if there is no bot user "at mentioned" nor has it been direct messaged
     """
@@ -74,7 +69,7 @@ def test_slack_message_listener_no_user_mentioned(caplog, message_event_payload)
 
 
 @patch("bot.STATE", autospec=False)
-def test_slack_message_listener_user_mentioned(caplog, message_event_payload):
+def test_slack_message_listener_user_mentioned(caplog, message_event_payload):  # pylint: disable=redefined-outer-name
     """
     Tests the slack_message_listener to ensure it processes the command when the slackbot user is "at mentioned"
     """
@@ -83,6 +78,7 @@ def test_slack_message_listener_user_mentioned(caplog, message_event_payload):
 
     # Provide @mention for message
     payload["data"]["text"] = "<@{user}> bad_command".format(user=bot_user)
+    payload["data"]["client_msg_id"] = "123455"
     mock_web_client = Mock()
     payload["web_client"] = mock_web_client
 
@@ -98,15 +94,17 @@ def test_slack_message_listener_user_mentioned(caplog, message_event_payload):
 
 
 @patch("bot.STATE", autospec=False)
-def test_slack_message_listener_direct_message(caplog, message_event_payload):
+def test_slack_message_listener_direct_message(caplog, message_event_payload):  # pylint: disable=redefined-outer-name
     """
-    Tests the slack_message_listener to ensure it processes the command when the slackbot user is sent a DM
+    Tests the slack_message_listener to ensure it processes the command when the slackbot user is sent a direct message
     """
     bot_user = "test_user"
     payload = message_event_payload
 
     # Provide proper channel format
     payload["data"]["channel"] = "Dchannel_name"
+    payload["data"]["client_msg_id"] = "123456"
+    payload["data"]["text"] = "unknown"
     mock_web_client = Mock()
     payload["web_client"] = mock_web_client
 
@@ -138,11 +136,11 @@ def test_slack_message_listener_skip_same_messages(caplog):
     }
 
     with caplog.at_level(logging.DEBUG):
-        for i in range(20):
+        for _ in range(20):
             bot.slack_message_listener(bot_user, {}, **payload)
         assert len(caplog.records) == 20
         for record in caplog.records:
-            assert "Message already processed" == record.msg
+            assert record.msg == "Message already processed"
 
 
 def test_slack_message_listener_keep_last_10_messages():
@@ -164,4 +162,4 @@ def test_slack_message_listener_keep_last_10_messages():
     for i in range(20):
         payload["data"]["client_msg_id"] = "123" + str(i)
         bot.slack_message_listener(bot_user, {}, **payload)
-    assert len(STATE.last_msgs) == 10
+    assert len(bot.STATE.last_msgs) == 10

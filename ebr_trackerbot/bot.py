@@ -53,7 +53,7 @@ def get_storage_name():
     """
     Retrieve storage name
     """
-    return config.get("storage_backend", "memory")
+    return config.get("storage_backend", "sqlite")
 
 
 def get_storage():

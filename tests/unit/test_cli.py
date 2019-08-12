@@ -3,8 +3,6 @@
 
 """Tests for `ebr_trackerbot` package."""
 
-import pytest
-
 from ebr_trackerbot import cli
 
 
