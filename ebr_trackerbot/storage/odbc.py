@@ -23,11 +23,6 @@ def get_connection(config):
     """
     if get_connection.link is None:
         get_connection.link = create_connection(config)
-    try:
-        cursor = get_connection.link.cursor()
-        cursor.close()
-    except:
-        get_connection.link = create_connection(config)
     return get_connection.link
 
 
