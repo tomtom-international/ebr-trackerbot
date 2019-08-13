@@ -3,6 +3,7 @@
 
 """Tests for `ebr_trackerbot` package."""
 
+from ebr_trackerbot import __version__ as version
 from ebr_trackerbot.command.help import help_command
 
 
@@ -21,7 +22,7 @@ def post_message_empty_commands(channel, text, thread_ts):
     """
     Check slack message when there are no registered commands
     """
-    assert text == "Hi <@test>! \nSupported commands:\n"
+    assert text == "Hi <@test>!\nI'm EBR-Trackerbot v{version}\nSupported commands:\n".format(version=version)
     return {"ok": "ok"}
 
 
@@ -40,7 +41,9 @@ def post_message_commands(channel, text, thread_ts):
     """
     Check slack message when there is one command
     """
-    assert text == "Hi <@test>! \nSupported commands:\n*test* some description\n"
+    assert text == "Hi <@test>!\nI'm EBR-Trackerbot v{version}\nSupported commands:\n*test* some description\n".format(
+        version=version
+    )
     return {"ok": "ok"}
 
 
