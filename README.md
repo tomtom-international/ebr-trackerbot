@@ -8,10 +8,14 @@
 [![PyPI - Format](https://img.shields.io/pypi/format/ebr-trackerbot.svg)](https://pypi.org/project/ebr-trackerbot/)
 [![PyPI - Status](https://img.shields.io/pypi/status/ebr-trackerbot.svg)](https://pypi.org/project/ebr-trackerbot/)
 [![PyUp - Updates](https://pyup.io/repos/github/tomtom-international/ebr-trackerbot/shield.svg)](https://pyup.io/repos/github/tomtom-international/ebr-trackerbot/)
-ebr tracker bot
 
 ## Features
 
+* `show` number of test failures over a given period
+* `track` a test for failures for a given period
+* `list` active tracking requests
+* Respond to private messages
+* Respond to `@mention` once integrated in a channel
 * Store tracking information in ODBC
 
 ## Installation
