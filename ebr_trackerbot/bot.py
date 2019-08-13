@@ -14,6 +14,7 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 from state import STATE
 from checker import check_tests
+from ebr_trackerbot import __version__ as version
 import slack
 
 config = {}  # pylint: disable=invalid-name
@@ -142,9 +143,11 @@ def id_bot(channel, loop, slack_client):
     message_response = loop.run_until_complete(
         slack_client.chat_postMessage(
             channel=channel,
-            text="""Hi there! I'm the ebr-trackerbot. I can provide automatic tracking of test failures for you.
+            text="""Hi there! I'm the ebr-trackerbot v{version}. I can provide automatic tracking of test failures for you.
 Message me in this channel with an at mention or send me a direct message.
-Use the help command for more info.""",
+Use the help command for more info.""".format(
+                version=version
+            ),
         )
     )
 
