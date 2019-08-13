@@ -6,4 +6,4 @@
 
 ## Contributors
 
-None yet. Why not be the first?
+* Eugene Davis <eugene.davis@tomtom.com>
