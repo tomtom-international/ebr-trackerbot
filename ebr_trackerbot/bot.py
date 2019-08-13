@@ -7,7 +7,7 @@ import os
 import re
 import sys
 import logging
-import functools
+from functools import partial, update_wrapper
 from vault_anyconfig.vault_anyconfig import VaultAnyConfig
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -63,6 +63,12 @@ def get_storage():
     if not hasattr(STATE, "bot_storage"):
         STATE.bot_storage = []
     return list(filter(lambda x: x["name"] == get_storage_name(), STATE.bot_storage))[0]
+
+
+def get_partial_function(function, *args, **kwargs):
+    partial_funct = partial(function, *args, **kwargs)
+    update_wrapper(partial_funct, function)
+    return partial_funct
 
 
 def slack_message_listener(bot_user, config_local, **payload):
@@ -202,5 +208,5 @@ def main(config_file, vault_config, vault_creds):
         config["slack_message_template"],
     )
     rtm_client = slack.RTMClient(token=config["slack_token"])
-    rtm_client.on(event="message", callback=functools.partial(slack_message_listener, bot_user, config))
+    rtm_client.on(event="message", callback=get_partial_function(slack_message_listener, bot_user, config))
     rtm_client.start()
