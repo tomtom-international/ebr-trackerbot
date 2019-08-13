@@ -12,6 +12,15 @@ ebr tracker bot
 
 ## Features
 
+* Store tracking information in ODBC
+
+## Installation
+
+Install with `pip install ebr-trackerbot`.
+
+To install with support for ODBC databases (other than SQLite), use `pip install ebr-trackerbot['db_support']`. This will compile against the odbc
+library, so that must also be installed *including* the development package if you intend to use ODBC. On Ubuntu this can be done with
+`sudo apt-get install unixodbc-dev`.
 
 ## Configuration
 
@@ -51,7 +60,8 @@ empty  file, otherwise see the configuration section above.
 
 * [python3](https://www.python.org/downloads)
 * [pip3](https://pip.pypa.io/en/stable/installing)
-* [virtualenv >= 16.6.0](https://virtualenv.pypa.io/en/latest/installation/)
+* [odbc](https://en.wikipedia.org/wiki/Open_Database_Connectivity) Optional, but required for using any database other than SQLite
+    * Linux: [unixODBC](http://www.unixodbc.org/)
 
 ## Credits
 
