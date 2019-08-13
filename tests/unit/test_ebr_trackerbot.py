@@ -163,3 +163,11 @@ def test_slack_message_listener_keep_last_10_messages():
         payload["data"]["client_msg_id"] = "123" + str(i)
         bot.slack_message_listener(bot_user, {}, **payload)
     assert len(bot.STATE.last_msgs) == 10
+
+
+def test_slack_message_listener_update_wrapper():
+    """
+    Tests that update_wrapper is correctly preserving __name__
+    """
+
+    assert bot.get_partial_function(bot.slack_message_listener).__name__ == "slack_message_listener"
