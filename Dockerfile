@@ -21,7 +21,9 @@ COPY . /code
 WORKDIR /code
 RUN DIST_DIR=$(mktemp -d) && python setup.py sdist --dist-dir $DIST_DIR\
  && pip install $DIST_DIR/*.tar.gz && pip install pyodbc>=4.0.27
+
 FROM $PYTHON_BASE
+RUN apk add unixodbc libstdc++
 COPY --from=deploy_builder /opt/venv /opt/venv
 
 ENV PATH="/opt/venv/bin:$PATH"
