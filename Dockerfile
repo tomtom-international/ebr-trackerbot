@@ -20,8 +20,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY . /code
 WORKDIR /code
 RUN DIST_DIR=$(mktemp -d) && python setup.py sdist --dist-dir $DIST_DIR\
- && pip install $DIST_DIR/*.tar.gz
-
+ && pip install $DIST_DIR/*.tar.gz && pip install pyodbc>=4.0.27
 FROM $PYTHON_BASE
 COPY --from=deploy_builder /opt/venv /opt/venv
 

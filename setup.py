@@ -25,10 +25,11 @@ requirements = [
     "pendulum>=2.0.5,<3.0.0",
     "vault-anyconfig>=0.2.2,<0.3.0",
     "PyYAML>=5.1,<6",
-    "pyodbc>=4.0.27,<4.1.0",
 ]
 
-setup_requirements = ["pytest-runner"]
+extra_requirements = {"db_support": ["pyodbc>=4.0.27,<4.1.0"]}
+
+setup_requirements = ["pytest-runner"] + extra_requirements["db_support"]
 
 test_requirements = ["pytest", "pytest-cov", "coverage"]
 
@@ -58,6 +59,7 @@ setup(
     setup_requires=setup_requirements,
     test_suite="tests",
     tests_require=test_requirements,
+    extra_requirements=extra_requirements,
     url="https://github.com/tomtom-international/ebr-trackerbot",
     version=ebr_trackerbot.__version__,
     zip_safe=False,
