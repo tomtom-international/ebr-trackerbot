@@ -2,6 +2,7 @@
 Slack Bot Help Command
 """
 import logging
+from ebr_trackerbot import __version__ as version
 from ebr_trackerbot.bot import register_command
 
 
@@ -16,7 +17,10 @@ def help_command(text, result, payload, config, commands):
         supported_commands += "*" + command["command"] + "* " + command["description"] + "\n"
     response = payload["web_client"].chat_postMessage(
         channel=payload["data"]["channel"],
-        text="Hi <@" + user + ">! \nSupported commands:\n" + supported_commands,
+        text="Hi <@"
+        + user
+        + ">!\nI'm EBR-Trackerbot v{version}\nSupported commands:\n".format(version=version)
+        + supported_commands,
         thread_ts=payload["data"]["ts"],
     )
     if "ok" not in response:
