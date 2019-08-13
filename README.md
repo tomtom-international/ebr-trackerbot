@@ -1,13 +1,12 @@
 # ebr-trackerbot
 
-[![Build Status](https://dev.azure.com/tomtomweb/tomtomweb/_apis/build/status/GitHub-TomTom-International/?branchName=master)](https://dev.azure.com/tomtomweb/GitHub-TomTom-International/_build/latest?definitionId=5&branchName=master)
+[![Build Status](https://dev.azure.com/tomtomweb/GitHub-TomTom-International/_apis/build/status/tomtom-international.ebr-trackerbot?branchName=master)](https://dev.azure.com/tomtomweb/GitHub-TomTom-International/_build/latest?definitionId=57&branchName=master)
 
 [![PyPI - Version](https://img.shields.io/pypi/v/ebr-trackerbot.svg)](https://pypi.org/project/ebr-trackerbot/)
 [![PyPI - License](https://img.shields.io/pypi/l/ebr-trackerbot.svg)](https://pypi.org/project/ebr-trackerbot/)
 [![PyPI - Python Versions](https://img.shields.io/pypi/pyversions/ebr-trackerbot.svg)](https://pypi.org/project/ebr-trackerbot/)
 [![PyPI - Format](https://img.shields.io/pypi/format/ebr-trackerbot.svg)](https://pypi.org/project/ebr-trackerbot/)
 [![PyPI - Status](https://img.shields.io/pypi/status/ebr-trackerbot.svg)](https://pypi.org/project/ebr-trackerbot/)
-[![PyUp - Updates](https://pyup.io/repos/github/tomtom-international/ebr-trackerbot/shield.svg)](https://pyup.io/repos/github/tomtom-international/ebr-trackerbot/)
 
 ## Features
 
