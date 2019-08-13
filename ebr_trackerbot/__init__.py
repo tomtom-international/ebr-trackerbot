@@ -5,4 +5,4 @@
 __project__ = "ebr-trackerbot"
 __author__ = "Milan Hradil"
 __email__ = "milan.hradil@tomtom.com"
-__version__ = "0.0.5-dev"
+__version__ = "0.1.0-dev"
