@@ -66,6 +66,12 @@ def get_storage():
 
 
 def get_partial_function(function, *args, **kwargs):
+    """
+    Returns a partial function that has already had update_wrapper called on it
+    Args:
+        function: the function to provide a partial for
+    Returns the partial function with updated attributes
+    """
     partial_funct = partial(function, *args, **kwargs)
     update_wrapper(partial_funct, function)
     return partial_funct
