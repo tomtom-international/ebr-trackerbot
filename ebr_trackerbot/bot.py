@@ -204,3 +204,23 @@ def main(config_file, vault_config, vault_creds):
     rtm_client = slack.RTMClient(token=config["slack_token"])
     rtm_client.on(event="message", callback=functools.partial(slack_message_listener, bot_user, config))
     rtm_client.start()
+
+
+def lambda_handler(data, context):
+    """
+    Handle an incoming HTTP request from a Slack chat-bot.
+    """
+
+    from ssm_parameter_store import EC2ParameterStore
+
+    config_name = os.environ.get("config_name", "ebr_board_config")
+    vault_config_name = os.environ.get("vault_config_name", "ebr_board_vault_config")
+    vault_creds_name = os.environ.get("vault_creds_name", "ebr_board_vault_creds")
+
+    store = EC2ParameterStore()
+    config = store.get_parameters([config_name, vault_config_name, vault_creds_name], decrypt=True)
+    configure(config[config_name], config[vault_config_name], config[vault_creds_name])
+
+    data["data"] = data["event"]
+    slack_message_listener(bot_user, config_local, data):
+    return "200 OK"
