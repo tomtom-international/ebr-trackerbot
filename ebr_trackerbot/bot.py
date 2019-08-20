@@ -222,5 +222,5 @@ def lambda_handler(data, context):
     configure(config[config_name], config[vault_config_name], config[vault_creds_name])
 
     data["data"] = data["event"]
-    slack_message_listener(bot_user, config_local, data):
+    slack_message_listener(bot_user, config_local, data)
     return "200 OK"
