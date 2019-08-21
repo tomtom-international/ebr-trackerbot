@@ -24,13 +24,17 @@ requirements = [
     "requests>=2.22.0,<3.0.0",
     "pendulum>=2.0.5,<3.0.0",
     "vault-anyconfig>=0.3.1,<0.4.0",
-    "PyYAML>=5.1,<6",
-    "ssm_parameter_store>=19,<20"
+    "PyYAML>=5.1,<6"
 ]
 
-extra_requirements = {"db_support": ["pyodbc>=4.0.27,<4.1.0"]}
+extra_requirements = {"db_support": ["pyodbc>=4.0.27,<4.1.0"], "aws_lambda": ["ssm_parameter_store>=19,<20"]}
 
-setup_requirements = ["pytest-runner"] + extra_requirements["db_support"]
+# Ensure that linting and testing will be done with all depedencies installed
+collected_extras = []
+for req_set_name, req_set in extra_requirements.items():
+    collected_extras += req_set
+
+setup_requirements = ["pytest-runner"] + collected_extras
 
 test_requirements = ["pytest", "pytest-cov", "coverage"]
 
