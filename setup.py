@@ -23,8 +23,9 @@ requirements = [
     "slackclient==2.1.0",
     "requests>=2.22.0,<3.0.0",
     "pendulum>=2.0.5,<3.0.0",
-    "vault-anyconfig>=0.2.2,<0.3.0",
+    "vault-anyconfig>=0.3.1,<0.4.0",
     "PyYAML>=5.1,<6",
+    "ssm_parameter_store>=19,<20"
 ]
 
 extra_requirements = {"db_support": ["pyodbc>=4.0.27,<4.1.0"]}
